@@ -19,7 +19,8 @@ lazy val client = (project in file("client")).settings(commonSettings).settings(
   libraryDependencies ++= Seq(
     "org.scala-js" %%% "scalajs-dom" % "0.9.3",
     "com.github.japgolly.scalajs-react" %%% "core" % "1.1.1",
-    "com.github.japgolly.scalajs-react" %%% "extra" % "1.1.1"
+    "com.github.japgolly.scalajs-react" %%% "extra" % "1.1.1",
+    "fr.hmil" %%% "roshttp" % "2.0.2"
   ),
   jsDependencies ++= Seq(
     "org.webjars.bower" % "react" % "15.6.1"
@@ -39,13 +40,18 @@ lazy val client = (project in file("client")).settings(commonSettings).settings(
 ).enablePlugins(ScalaJSPlugin, ScalaJSWeb).
   dependsOn(sharedJs)
 
-lazy val shared = (crossProject.crossType(CrossType.Pure) in file("shared")).settings(commonSettings)
+lazy val shared = (crossProject.crossType(CrossType.Pure) in file("shared")).settings(commonSettings).settings(
+  libraryDependencies ++= Seq(
+    "com.typesafe.play" %%% "play-json" % "2.6.6"
+  )
+)
 lazy val sharedJvm = shared.jvm
 lazy val sharedJs = shared.js
 
 lazy val commonSettings = Seq(
   scalaVersion := "2.12.4",
-  organization := "jp.co.applibot"
+  organization := "jp.co.applibot",
+  javaOptions += "-Xmx2G"
 )
 
 // loads the server project at sbt startup
