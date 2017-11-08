@@ -1,0 +1,13 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# Home page
+GET         /                           jp.co.applibot.abc.controllers.Application.index
+GET         /sign-up                    jp.co.applibot.abc.controllers.Application.index
+GET         /login                      jp.co.applibot.abc.controllers.Application.index
+GET         /chat                       jp.co.applibot.abc.controllers.Application.index
+
+# Prefix must match `play.assets.urlPrefix`
+GET         /assets/*file               controllers.Assets.at(file)
+GET         /versionedAssets/*file      controllers.Assets.versioned(path="/public", file: Asset)
