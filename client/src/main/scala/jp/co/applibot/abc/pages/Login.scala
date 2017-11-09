@@ -4,6 +4,7 @@ import japgolly.scalajs.react._
 import japgolly.scalajs.react.component.Scala.Unmounted
 import japgolly.scalajs.react.vdom.html_<^._
 import jp.co.applibot.abc.Store
+import jp.co.applibot.abc.actions.LoginActions
 import jp.co.applibot.abc.models.State
 
 import scala.scalajs.js
@@ -52,12 +53,12 @@ trait Login {
 
     def handleChangeUserID(event: ReactEventFromInput): Callback = Callback {
       val value = event.target.value
-      Store.update(s => s.copy(login = s.login.copy(id = value)))
+      LoginActions.setUserId(value)
     }
 
     def handleChangePassword(event: ReactEventFromInput): Callback = Callback {
       val value = event.target.value
-      Store.update(s => s.copy(login = s.login.copy(password = value)))
+      LoginActions.setPassword(value)
     }
   }
 
