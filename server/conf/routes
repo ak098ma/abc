@@ -13,7 +13,5 @@ GET         /assets/*file               controllers.Assets.at(file)
 GET         /versionedAssets/*file      controllers.Assets.versioned(path="/public", file: Asset)
 
 # Rest API
-+ nocsrf
 POST        /rest/v1/sign-up            jp.co.applibot.abc.controllers.RestAPI.signUp
-+ nocsrf
 POST        /rest/v1/login              jp.co.applibot.abc.controllers.RestAPI.login
