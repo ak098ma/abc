@@ -6,7 +6,7 @@ import japgolly.scalajs.react.vdom.html_<^._
 import jp.co.applibot.abc.Store
 import jp.co.applibot.abc.actions.{SignUpActions, WebActions}
 import jp.co.applibot.abc.models.State
-import jp.co.applibot.abc.shared.User
+import jp.co.applibot.abc.shared.models.User
 
 import scala.scalajs.js
 

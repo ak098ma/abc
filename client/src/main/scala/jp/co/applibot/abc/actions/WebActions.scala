@@ -1,14 +1,14 @@
 package jp.co.applibot.abc.actions
 
-import jp.co.applibot.abc.WebAPI
-import jp.co.applibot.abc.shared.{User, UserCredential}
+import jp.co.applibot.abc.shared.models.{User, UserCredential}
+import jp.co.applibot.abc.web.APIClient
 
 import scala.util.{Failure, Success}
 import monix.execution.Scheduler.Implicits.global
 
 object WebActions {
   def login(userCredential: UserCredential): Unit = {
-    WebAPI.login(userCredential).onComplete {
+    APIClient.login(userCredential).onComplete {
       case Success(response) =>
         println(response)
       case Failure(error) =>
@@ -17,7 +17,7 @@ object WebActions {
   }
 
   def signUp(user: User): Unit = {
-    WebAPI.signUp(user).onComplete {
+    APIClient.signUp(user).onComplete {
       case Success(response) =>
         println(response)
       case Failure(error) =>
