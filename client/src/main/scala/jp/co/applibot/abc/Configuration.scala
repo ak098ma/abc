@@ -14,7 +14,7 @@ object Configuration {
     import dsl._
 
     (emptyRule
-      | staticRoute(root, Home) ~> render(Home())
+      | staticRoute(root, Home) ~> renderR(Home(_))
       | staticRoute(root / "sign-up", SignUp) ~> render(SignUp())
       | staticRoute(root / "login", Login) ~> render(Login())
       | staticRoute(root / "chat", Chat) ~> render(Chat())
