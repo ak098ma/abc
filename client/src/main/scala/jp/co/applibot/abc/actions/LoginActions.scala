@@ -4,7 +4,7 @@ import jp.co.applibot.abc.Store
 import jp.co.applibot.abc.models.LoginState
 
 object LoginActions {
-  def updateLoginState(modify: LoginState => LoginState): Unit = {
+  private def updateLoginState(modify: LoginState => LoginState): Unit = {
     Store.update(s => s.copy(login = modify(s.login)))
   }
 

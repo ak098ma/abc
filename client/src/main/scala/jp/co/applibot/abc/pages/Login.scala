@@ -4,8 +4,9 @@ import japgolly.scalajs.react._
 import japgolly.scalajs.react.component.Scala.Unmounted
 import japgolly.scalajs.react.vdom.html_<^._
 import jp.co.applibot.abc.Store
-import jp.co.applibot.abc.actions.LoginActions
+import jp.co.applibot.abc.actions.{LoginActions, WebActions}
 import jp.co.applibot.abc.models.State
+import jp.co.applibot.abc.shared.UserCredential
 
 import scala.scalajs.js
 
@@ -37,7 +38,8 @@ trait Login {
         ),
         <.div(
           <.button(
-            "Login"
+            "Login",
+            ^.onClick --> handleClickLogin
           )
         )
       )
@@ -59,6 +61,10 @@ trait Login {
     def handleChangePassword(event: ReactEventFromInput): Callback = Callback {
       val value = event.target.value
       LoginActions.setPassword(value)
+    }
+
+    def handleClickLogin: Callback = bs.state.map { state =>
+      WebActions.login(UserCredential(id = state.login.id, password = state.login.password))
     }
   }
 
