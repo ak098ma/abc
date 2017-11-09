@@ -7,7 +7,8 @@ lazy val server = (project in file("server")).settings(commonSettings).settings(
   libraryDependencies ++= Seq(
     "com.vmunier" %% "scalajs-scripts" % "1.1.1",
     guice,
-    specs2 % Test
+    specs2 % Test,
+    "com.h2database" % "h2" % "1.4.192"
   ),
   // Compile the project before generating Eclipse files, so that generated .scala or .class files for views and routes are present
   EclipseKeys.preTasks := Seq(compile in Compile)
@@ -51,7 +52,7 @@ lazy val sharedJs = shared.js
 lazy val commonSettings = Seq(
   scalaVersion := "2.12.4",
   organization := "jp.co.applibot",
-  javaOptions += "-Xmx2G"
+  javaOptions += "-Xmx4G"
 )
 
 // loads the server project at sbt startup
