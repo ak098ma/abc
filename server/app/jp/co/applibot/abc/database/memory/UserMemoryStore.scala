@@ -1,11 +1,14 @@
 package jp.co.applibot.abc.database.memory
 
+import javax.inject._
+
 import jp.co.applibot.abc.database.interface.UserStore
 import jp.co.applibot.abc.shared.models.{User, UserCredential}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class Store extends UserStore {
+@Singleton
+class UserMemoryStore extends UserStore {
   private var users: Seq[User] = Seq.empty[User]
 
   override def add(user: User)(implicit executor: ExecutionContext): Future[Boolean] = Future {

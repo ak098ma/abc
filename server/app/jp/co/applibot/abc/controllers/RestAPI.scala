@@ -2,7 +2,7 @@ package jp.co.applibot.abc.controllers
 
 import javax.inject._
 
-import jp.co.applibot.abc.database.memory.Store
+import jp.co.applibot.abc.database.memory.UserMemoryStore
 import jp.co.applibot.abc.shared.models.{User, UserCredential}
 import play.api.libs.json._
 import play.api.mvc._
@@ -10,7 +10,7 @@ import play.api.mvc._
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class RestAPI @Inject()(cc: ControllerComponents, store: Store)(implicit executor: ExecutionContext) extends AbstractController(cc) {
+class RestAPI @Inject()(cc: ControllerComponents, store: UserMemoryStore)(implicit executor: ExecutionContext) extends AbstractController(cc) {
 
   def signUp: Action[JsValue] = Action(parse.json).async { implicit request =>
     Json.fromJson[User](request.body) match {
