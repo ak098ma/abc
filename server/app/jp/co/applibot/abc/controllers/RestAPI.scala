@@ -10,17 +10,17 @@ import play.api.mvc._
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class RestAPI @Inject()(cc: ControllerComponents)(implicit executor: ExecutionContext) extends AbstractController(cc) {
+class RestAPI @Inject()(cc: ControllerComponents, store: Store)(implicit executor: ExecutionContext) extends AbstractController(cc) {
 
   def signUp: Action[JsValue] = Action(parse.json).async { implicit request =>
     Json.fromJson[User](request.body) match {
       case jsSuccess: JsSuccess[User] =>
         val user = jsSuccess.get
-        Store.get(UserCredential(id = user.id, password = user.password)).flatMap{
+        store.get(UserCredential(id = user.id, password = user.password)).flatMap{
           case Some(_) =>
             Future { Conflict("this user is already registered.") }
           case None =>
-            Store.add(user).map {
+            store.add(user).map {
               case true =>
                 Ok("")
               case false =>
@@ -36,7 +36,7 @@ class RestAPI @Inject()(cc: ControllerComponents)(implicit executor: ExecutionCo
     Json.fromJson[UserCredential](request.body) match {
       case jsSuccess: JsSuccess[UserCredential] =>
         val userCredential = jsSuccess.get
-        Store.get(userCredential).map {
+        store.get(userCredential).map {
           case Some(user) =>
             Ok(Json.toJson(user))
           case None =>

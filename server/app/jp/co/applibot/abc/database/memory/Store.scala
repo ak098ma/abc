@@ -5,7 +5,7 @@ import jp.co.applibot.abc.shared.models.{User, UserCredential}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-object Store extends UserStore {
+class Store extends UserStore {
   private var users: Seq[User] = Seq.empty[User]
 
   override def add(user: User)(implicit executor: ExecutionContext): Future[Boolean] = Future {
