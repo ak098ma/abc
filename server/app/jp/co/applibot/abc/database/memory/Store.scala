@@ -10,7 +10,6 @@ class Store extends UserStore {
 
   override def add(user: User)(implicit executor: ExecutionContext): Future[Boolean] = Future {
     users = users :+ user
-    println(users)
     true
   }
 
