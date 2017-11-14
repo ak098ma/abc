@@ -1,4 +1,4 @@
-package jp.co.applibot.abc.actions
+package jp.co.applibot.abc.mvc.actions
 
 import jp.co.applibot.abc.Store
 import jp.co.applibot.abc.models.LoginState

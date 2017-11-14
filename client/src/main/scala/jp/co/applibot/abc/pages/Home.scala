@@ -5,7 +5,6 @@ import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.html_<^._
 import jp.co.applibot.abc._
 import jp.co.applibot.abc.models.State
-
 import scala.scalajs.js
 
 trait Home {

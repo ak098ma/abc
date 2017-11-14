@@ -29,4 +29,11 @@ object APIClient {
       .withBody(Json.toJson(userCredential))
       .send()
   }
+
+  def test(implicit scheduler: Scheduler): Future[SimpleHttpResponse] = {
+    request(_ / "test")
+      .withMethod(POST)
+      .withHeader("Authorization", "JWT-TEST")
+      .send()
+  }
 }
