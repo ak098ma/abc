@@ -4,6 +4,7 @@ import javax.inject._
 
 import jp.co.applibot.abc.database.interface.UserStore
 import jp.co.applibot.abc.mvc.requests.SecureRequest
+import jp.co.applibot.abc.utils.UserIdSession
 import play.api.mvc._
 import play.api.mvc.Results._
 
@@ -14,7 +15,7 @@ class SecureAction @Inject()(val parser: BodyParsers.Default, store: UserStore)
   extends ActionBuilder[SecureRequest, AnyContent] {
 
   override def invokeBlock[A](request: Request[A], block: SecureRequest[A] => Future[Result]): Future[Result] = {
-    request.session.get("id") match {
+    request.session.get(UserIdSession.key) match {
       case None =>
         Future.successful(Unauthorized("ログインしてください。"))
       case Some(userId) =>

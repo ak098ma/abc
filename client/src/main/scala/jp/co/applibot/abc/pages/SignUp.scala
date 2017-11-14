@@ -2,17 +2,21 @@ package jp.co.applibot.abc.pages
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.component.Scala.Unmounted
+import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.html_<^._
-import jp.co.applibot.abc.Store
+import jp.co.applibot.abc.{Page, Store}
 import jp.co.applibot.abc.mvc.actions.{SignUpActions, WebActions}
 import jp.co.applibot.abc.models.State
+import jp.co.applibot.abc.mvc.errors.SignUpError
+import jp.co.applibot.abc.react.BackendUtils
 import jp.co.applibot.abc.shared.models.User
 
 import scala.scalajs.js
 
 trait SignUp {
+  type Props = RouterCtl[Page]
 
-  class Backend(bs: BackendScope[Unit, State]) {
+  class Backend(override val bs: BackendScope[Props, State]) extends BackendUtils[Props, State] {
     private val update: js.Function1[State, Unit] = (state) => {
       bs.setState(state).runNow()
     }
@@ -49,6 +53,12 @@ trait SignUp {
             "SignUp",
             ^.onClick --> handleClickSignUp
           )
+        ),
+        <.div(
+          <.button(
+            "already have an account?",
+            ^.onClick --> handleClickAlreadyHaveAnAccount
+          )
         )
       )
     }
@@ -76,12 +86,23 @@ trait SignUp {
       SignUpActions.setPassword(value)
     }
 
-    def handleClickSignUp: Callback = bs.state.map { state =>
-      WebActions.signUp(User(id = state.signUp.id, nickname = state.signUp.nickname, password = state.signUp.password))
+    def handleClickSignUp: Callback = callbackWithPS { (props, state) =>
+      WebActions.signUp(
+        user = User(id = state.signUp.id, nickname = state.signUp.nickname, password = state.signUp.password),
+        onSuccess = () => props.set(Page.Login),
+        onFailure = {
+          case SignUpError.InvalidPassword =>
+            org.scalajs.dom.window.console.warn(SignUpError.InvalidPassword.message)
+          case error =>
+            org.scalajs.dom.window.console.error(error.message)
+        },
+      )
     }
+
+    def handleClickAlreadyHaveAnAccount: Callback = bs.props.flatMap(_.set(Page.Login))
   }
 
-  private val signUp = ScalaComponent.builder[Unit]("SignUp")
+  private val signUp = ScalaComponent.builder[Props]("SignUp")
     .initialState(Store.getState)
     .backend(new Backend(_))
     .renderBackend
@@ -89,5 +110,5 @@ trait SignUp {
     .componentWillUnmount(_.backend.componentWillUnmount)
     .build
 
-  def apply(): Unmounted[Unit, State, Backend] = signUp()
+  def apply(props: Props): Unmounted[Props, State, Backend] = signUp(props)
 }

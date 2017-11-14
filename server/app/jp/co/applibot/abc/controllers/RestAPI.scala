@@ -4,7 +4,8 @@ import javax.inject._
 
 import jp.co.applibot.abc.database.memory.UserMemoryStore
 import jp.co.applibot.abc.mvc.actions.SecureAction
-import jp.co.applibot.abc.shared.models.{User, UserCredential, UserPublic}
+import jp.co.applibot.abc.shared.models.{User, UserCredential}
+import jp.co.applibot.abc.utils.UserIdSession
 import play.api.libs.json._
 import play.api.mvc._
 
@@ -39,7 +40,7 @@ class RestAPI @Inject()(secureAction: SecureAction, cc: ControllerComponents, st
         val userCredential = jsSuccess.get
         store.get(userCredential).map {
           case Some(user) =>
-            Ok(Json.toJson(UserPublic(id = user.id, nickname = user.nickname))).withSession(("id", user.id))
+            Ok("").withSession(UserIdSession(user.id))
           case None =>
             Unauthorized(s"id or password may be wrong.")
         }

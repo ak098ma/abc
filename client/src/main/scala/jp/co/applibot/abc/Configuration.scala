@@ -4,6 +4,7 @@ import japgolly.scalajs.react.vdom.Implicits._
 import japgolly.scalajs.react.extra.router._
 import org.scalajs.dom
 import org.scalajs.dom.raw.Element
+import Page._
 
 object Configuration {
   val reactRootElement: Element = dom.document.getElementById("react-root")
@@ -14,10 +15,9 @@ object Configuration {
     import dsl._
 
     (emptyRule
-      | staticRoute(root, Home) ~> renderR(Home(_))
-      | staticRoute(root / "sign-up", SignUp) ~> render(SignUp())
-      | staticRoute(root / "login", Login) ~> render(Login())
-      | staticRoute(root / "chat", Chat) ~> render(Chat())
-      ).notFound(redirectToPage(Home)(Redirect.Replace))
+      | staticRoute(root, Chat) ~> renderR(Chat(_))
+      | staticRoute(root / "sign-up", SignUp) ~> renderR(SignUp(_))
+      | staticRoute(root / "login", Login) ~> renderR(Login(_))
+      ).notFound(redirectToPage(Chat)(Redirect.Replace))
   }
 }
