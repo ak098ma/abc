@@ -33,6 +33,7 @@ object APIClient {
     headers.append("Content-Type", "application/json")
     val request = RequestInit(
       method = POST,
+      credentials = RequestCredentials.include,
       body = Json.toJson(userCredential).toString(),
       headers = headers,
     )
@@ -41,7 +42,10 @@ object APIClient {
 
   def getUser: Future[Response] = {
     val path = restV1(_ / "secure" / "user")
-    val request = RequestInit(method = GET)
+    val request = RequestInit(
+      method = GET,
+      credentials = RequestCredentials.include,
+    )
     fetch(path, request).toFuture
   }
 }

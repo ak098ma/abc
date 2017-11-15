@@ -15,8 +15,7 @@ object WebActions {
       case Success(response) =>
         response.status match {
           case 200 =>
-            org.scalajs.dom.console.log(response.headers.mkString(", "))
-//            Store.getState.router.foreach(_.set(Page.Chat).runNow())
+            Store.getState.router.foreach(_.set(Page.Chat).runNow())
           case 401 =>
           case _ =>
         }
