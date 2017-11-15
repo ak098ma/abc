@@ -1,45 +1,51 @@
 package jp.co.applibot.abc.mvc.actions
 
-import jp.co.applibot.abc.mvc.errors.{LoginError, SignUpError}
+import jp.co.applibot.abc.{Page, Store}
 import jp.co.applibot.abc.shared.models.{User, UserCredential}
 import jp.co.applibot.abc.web.APIClient
-import monix.execution.Scheduler.Implicits.global
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{Failure, Success}
 
 object WebActions {
-  def login(userCredential: UserCredential,
-            onSuccess: () => Unit = () => (),
-            onFailure: (LoginError) => Unit = (_) => ()): Unit = {
+  def login(userCredential: UserCredential): Unit = {
     APIClient.login(userCredential).onComplete {
       case Failure(error) =>
-        onFailure(LoginError.APIClientError(error))
+        throw error
       case Success(response) =>
-        response.statusCode match {
+        response.status match {
           case 200 =>
-            onSuccess()
+            org.scalajs.dom.console.log(response.headers.mkString(", "))
+//            Store.getState.router.foreach(_.set(Page.Chat).runNow())
           case 401 =>
-            onFailure(LoginError.Unauthorized)
           case _ =>
-            onFailure(LoginError.UnexpectedState(response))
         }
     }
   }
 
-  def signUp(user: User,
-             onSuccess: () => Unit = () => (),
-             onFailure: (SignUpError) => Unit = (_) => ()): Unit = {
+  def signUp(user: User): Unit = {
     APIClient.signUp(user).onComplete {
       case Failure(error) =>
-        onFailure(SignUpError.APIClientError(error))
+        throw error
       case Success(response) =>
-        response.statusCode match {
+        response.status match {
           case 200 =>
-            onSuccess()
           case 400 =>
-            onFailure(SignUpError.InvalidPassword)
           case _ =>
-            onFailure(SignUpError.UnexpectedState(response))
+        }
+    }
+  }
+
+  def fetchUser(): Unit = {
+    APIClient.getUser.onComplete {
+      case Failure(error) =>
+        throw error
+      case Success(response) =>
+        response.status match {
+          case 200 =>
+          case 401 =>
+            Store.getState.router.foreach(_.set(Page.Login).runNow())
+          case _ =>
         }
     }
   }

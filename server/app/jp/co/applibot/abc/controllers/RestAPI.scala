@@ -48,4 +48,8 @@ class RestAPI @Inject()(secureAction: SecureAction, cc: ControllerComponents, st
         Future { BadRequest(jsError.errors.mkString(", ")) }
     }
   }
+
+  def getUser: Action[AnyContent] = secureAction.async { implicit request =>
+    Future.successful(Ok(Json.prettyPrint(Json.toJson(request.userPublic))))
+  }
 }

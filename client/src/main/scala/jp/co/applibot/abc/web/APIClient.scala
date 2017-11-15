@@ -1,39 +1,47 @@
 package jp.co.applibot.abc.web
 
-import fr.hmil.roshttp.HttpRequest
-import fr.hmil.roshttp.Method.POST
-import fr.hmil.roshttp.response.SimpleHttpResponse
 import japgolly.scalajs.react.extra.router.BaseUrl
 import jp.co.applibot.abc.Configuration
-import monix.execution.Scheduler
-import play.api.libs.json.Json
-import Implicits._
 import jp.co.applibot.abc.shared.models._
+import org.scalajs.dom.experimental.Fetch.fetch
+import org.scalajs.dom.experimental.HttpMethod._
+import org.scalajs.dom.experimental._
+import play.api.libs.json.Json
 
 import scala.concurrent.Future
 
 object APIClient {
-  private def httpRequest(resolve: BaseUrl => BaseUrl) = HttpRequest(resolve(Configuration.baseUrl).value)
-  private def request(resolve: BaseUrl => BaseUrl) = httpRequest(baseUrl => resolve(baseUrl / "rest" / "v1"))
+  private val baseUrl = Configuration.baseUrl
 
-  def signUp(user: User)(implicit scheduler: Scheduler): Future[SimpleHttpResponse] = {
-    request(_ / "sign-up")
-      .withMethod(POST)
-      .withBody(Json.toJson(user))
-      .send()
+  private def restV1(resolve: BaseUrl => BaseUrl): String = resolve(baseUrl / "rest" / "v1").value
+
+  def signUp(user: User): Future[Response] = {
+    val path = restV1(_ / "sign-up")
+    val headers = new Headers()
+    headers.append("Content-Type", "application/json")
+    val request = RequestInit(
+      method = POST,
+      body = Json.toJson(user).toString(),
+      headers = headers,
+    )
+    fetch(path, request).toFuture
   }
 
-  def login(userCredential: UserCredential)(implicit scheduler: Scheduler): Future[SimpleHttpResponse] = {
-    request(_ / "login")
-      .withMethod(POST)
-      .withBody(Json.toJson(userCredential))
-      .send()
+  def login(userCredential: UserCredential): Future[Response] = {
+    val path = restV1(_ / "login")
+    val headers = new Headers()
+    headers.append("Content-Type", "application/json")
+    val request = RequestInit(
+      method = POST,
+      body = Json.toJson(userCredential).toString(),
+      headers = headers,
+    )
+    fetch(path, request).toFuture
   }
 
-  def test(implicit scheduler: Scheduler): Future[SimpleHttpResponse] = {
-    request(_ / "test")
-      .withMethod(POST)
-      .withHeader("Authorization", "JWT-TEST")
-      .send()
+  def getUser: Future[Response] = {
+    val path = restV1(_ / "secure" / "user")
+    val request = RequestInit(method = GET)
+    fetch(path, request).toFuture
   }
 }

@@ -17,6 +17,7 @@ class SecureAction @Inject()(val parser: BodyParsers.Default, store: UserStore)
   override def invokeBlock[A](request: Request[A], block: SecureRequest[A] => Future[Result]): Future[Result] = {
     request.session.get(UserIdSession.key) match {
       case None =>
+        println(request.session)
         Future.successful(Unauthorized("ログインしてください。"))
       case Some(userId) =>
         store.get(userId).flatMap {

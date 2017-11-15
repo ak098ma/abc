@@ -4,23 +4,16 @@ import japgolly.scalajs.react._
 import japgolly.scalajs.react.component.Scala.Unmounted
 import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.html_<^._
-import jp.co.applibot.abc.{Page, Store}
-import jp.co.applibot.abc.mvc.actions.{SignUpActions, WebActions}
 import jp.co.applibot.abc.models.State
-import jp.co.applibot.abc.mvc.errors.SignUpError
+import jp.co.applibot.abc.mvc.actions.{SignUpActions, WebActions}
 import jp.co.applibot.abc.react.BackendUtils
 import jp.co.applibot.abc.shared.models.User
-
-import scala.scalajs.js
+import jp.co.applibot.abc.{Page, Store}
 
 trait SignUp {
   type Props = RouterCtl[Page]
 
   class Backend(override val bs: BackendScope[Props, State]) extends BackendUtils[Props, State] {
-    private val update: js.Function1[State, Unit] = (state) => {
-      bs.setState(state).runNow()
-    }
-
     def render(state: State) = {
       <.div(
         <.div(
@@ -63,8 +56,9 @@ trait SignUp {
       )
     }
 
-    def componentWillMount = Callback {
+    def componentWillMount: Callback = bs.props.map { props =>
       Store.subscribe(update)
+      Store.update(_.copy(router = Some(props)))
     }
 
     def componentWillUnmount = Callback {
@@ -87,16 +81,7 @@ trait SignUp {
     }
 
     def handleClickSignUp: Callback = callbackWithPS { (props, state) =>
-      WebActions.signUp(
-        user = User(id = state.signUp.id, nickname = state.signUp.nickname, password = state.signUp.password),
-        onSuccess = () => props.set(Page.Login),
-        onFailure = {
-          case SignUpError.InvalidPassword =>
-            org.scalajs.dom.window.console.warn(SignUpError.InvalidPassword.message)
-          case error =>
-            org.scalajs.dom.window.console.error(error.message)
-        },
-      )
+      WebActions.signUp(User(id = state.signUp.id, nickname = state.signUp.nickname, password = state.signUp.password))
     }
 
     def handleClickAlreadyHaveAnAccount: Callback = bs.props.flatMap(_.set(Page.Login))
