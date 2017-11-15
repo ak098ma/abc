@@ -44,14 +44,19 @@ trait Login {
             "new user?",
             ^.onClick --> handleClickNewUser
           )
-        )
+        ),
       )
     }
 
     def componentWillMount: Callback = bs.props.map { props =>
       Store.subscribe(update)
       Store.update(_.copy(router = Some(props)))
+      WebActions.fetchUser()
     }
+
+    def moveToLogin: Callback = Callback {
+      Store.getState.router.foreach(_.set(Page.Login).runNow())
+    } >> Callback.log("moved.")
 
     def componentWillUnmount = Callback {
       Store.unsubscribe(update)
