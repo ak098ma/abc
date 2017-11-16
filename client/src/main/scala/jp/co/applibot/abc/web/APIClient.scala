@@ -48,4 +48,13 @@ object APIClient {
     )
     fetch(path, request).toFuture
   }
+
+  def getChatRooms: Future[Response] = {
+    val path = restV1(_ / "secure" / "rooms")
+    val request = RequestInit(
+      method = GET,
+      credentials = RequestCredentials.include,
+    )
+    fetch(path, request).toFuture
+  }
 }

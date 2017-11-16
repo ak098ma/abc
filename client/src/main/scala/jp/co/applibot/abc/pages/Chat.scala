@@ -23,6 +23,7 @@ trait Chat {
       Store.subscribe(update)
       Store.update(_.copy(router = Some(props)))
       WebActions.fetchUser()
+      WebActions.fetchChatRooms()
     }
 
     def componentWillUnmount: Callback = Callback {
