@@ -117,8 +117,8 @@ object WebActions {
       socket.addEventListener("error", { event: ErrorEvent =>
         window.console.error(event)
       })
-      socket.addEventListener("close", { event: CloseEvent =>
-        window.console.warn(event)
+      socket.addEventListener("close", { _: CloseEvent =>
+        Store.updateChatState(_.copy(webSocketOption = None))
       })
       Store.updateChatState(_.copy(webSocketOption = Some(socket)))
       window.addEventListener("unload", unload)
