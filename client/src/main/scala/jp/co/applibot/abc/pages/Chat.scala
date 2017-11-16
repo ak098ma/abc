@@ -7,13 +7,24 @@ import japgolly.scalajs.react.vdom.html_<^._
 import jp.co.applibot.abc.models.State
 import jp.co.applibot.abc.mvc.actions.{ChatActions, WebActions}
 import jp.co.applibot.abc.react.BackendUtils
-import jp.co.applibot.abc.shared.models.{ChatRoom, ChatRooms, NewChatRoom}
+import jp.co.applibot.abc.shared.models._
 import jp.co.applibot.abc.{Page, Store}
+import org.scalajs.dom.raw.{MessageEvent, WebSocket}
+import org.scalajs.dom.{Event, window}
+import play.api.libs.json.Json
+
+import scala.scalajs.js
 
 trait Chat {
   type Props = RouterCtl[Page]
 
   class Backend(override val bs: BackendScope[Props, State]) extends BackendUtils[Props, State] {
+    private var socketOption: Option[WebSocket] = None
+    private def closeSocket = socketOption.foreach { socket =>
+      socket.close(code = 1000, reason = "unload")
+    }
+    private val unload: js.Function1[Event, Unit] = (_) => closeSocket
+
     def render(state: State) = {
       <.div(
         <.header(
@@ -112,10 +123,31 @@ trait Chat {
       Store.update(_.copy(router = Some(props)))
       WebActions.fetchUser()
       WebActions.fetchChatRooms()
+      val socket = new WebSocket(s"ws://${window.location.hostname}:${window.location.port}/chat/socket")
+      socketOption = Some(socket)
+      socket.addEventListener("open", { _: Event =>
+        socket.send(Json.toJson(ClientToServerEvent("ほにゃ")).toString())
+      })
+      socket.addEventListener("message", { messageEvent: MessageEvent =>
+        window.console.info(messageEvent)
+        window.console.info(messageEvent.ports)
+        window.console.info(messageEvent.source)
+        println(messageEvent.data)
+        window.console.info(messageEvent.origin)
+      })
+      socket.addEventListener("error", { event: Event =>
+        window.console.error(event)
+      })
+      socket.addEventListener("close", { event: Event =>
+        window.console.warn(event)
+      })
+      window.addEventListener("unload", unload)
     }
 
     def componentWillUnmount: Callback = Callback {
       Store.unsubscribe(update)
+      window.removeEventListener("unload", unload)
+      closeSocket
     }
 
     def handleLogout: Callback = Callback {

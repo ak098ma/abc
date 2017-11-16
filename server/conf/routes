@@ -6,7 +6,6 @@
 GET         /                           jp.co.applibot.abc.controllers.Application.index
 GET         /sign-up                    jp.co.applibot.abc.controllers.Application.index
 GET         /login                      jp.co.applibot.abc.controllers.Application.index
-GET         /chat                       jp.co.applibot.abc.controllers.Application.index
 
 # Prefix must match `play.assets.urlPrefix`
 GET         /assets/*file               controllers.Assets.at(file)
@@ -19,3 +18,6 @@ POST        /rest/v1/secure/rooms       jp.co.applibot.abc.controllers.RestAPI.c
 POST        /rest/v1/sign-up            jp.co.applibot.abc.controllers.RestAPI.signUp
 POST        /rest/v1/login              jp.co.applibot.abc.controllers.RestAPI.login
 POST        /rest/v1/logout             jp.co.applibot.abc.controllers.RestAPI.logout
+
+# WebSocket
+GET         /chat/socket                jp.co.applibot.abc.controllers.ChatController.socket
