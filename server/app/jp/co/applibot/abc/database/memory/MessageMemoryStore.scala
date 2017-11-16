@@ -1,12 +1,14 @@
 package jp.co.applibot.abc.database.memory
 
 import java.util.{Date, UUID}
+import javax.inject.Singleton
 
 import jp.co.applibot.abc.database.interface.MessageStore
 import jp.co.applibot.abc.shared.models.{Message, NewMessage}
 
 import scala.concurrent.{ExecutionContext, Future}
 
+@Singleton
 class MessageMemoryStore extends MessageStore {
   private var messages: Map[String, Seq[Message]] = Map.empty[String, Seq[Message]]
 
