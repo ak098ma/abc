@@ -11,4 +11,16 @@ object Store extends flux.Store(State(
   signUp = SignUpState(
     id = "",
     nickname = "",
-    password = "")))
+    password = ""),
+  chat = ChatState(
+    userPublicOption = None,
+    chatRoomsOption = None,
+    isCreateNewChatRoomDialogOpen = false,
+    titleOfNewChatRoom = "",
+    selectedChatRoomOption = None,
+  )
+)) {
+  def updateChatState(modify: ChatState => ChatState): Unit = update(state => state.copy(chat = modify(state.chat)))
+  def updateLoginState(modify: LoginState => LoginState): Unit = update(state => state.copy(login = modify(state.login)))
+  def updateSignUpState(modify: SignUpState => SignUpState): Unit = update(state => state.copy(signUp = modify(state.signUp)))
+}

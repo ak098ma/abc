@@ -5,4 +5,5 @@ import jp.co.applibot.abc.Page
 
 case class State(router: Option[RouterCtl[Page]],
                  login: LoginState,
-                 signUp: SignUpState)
+                 signUp: SignUpState,
+                 chat: ChatState)

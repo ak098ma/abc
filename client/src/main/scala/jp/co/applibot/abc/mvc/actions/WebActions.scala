@@ -1,14 +1,16 @@
 package jp.co.applibot.abc.mvc.actions
 
-import jp.co.applibot.abc.shared.models.{ChatRooms, User, UserCredential}
+import jp.co.applibot.abc.shared.models._
 import jp.co.applibot.abc.web.APIClient
 import jp.co.applibot.abc.{Page, Store}
 import org.scalajs.dom.experimental.{ReadableStream, Response}
 import org.scalajs.dom.window
-import play.api.libs.json.{JsError, JsSuccess, Json}
+import play.api.libs.json.{JsError, JsSuccess, JsValue, Json}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.scalajs.js
+import scala.scalajs.js.Promise
 import scala.scalajs.js.typedarray.Uint8Array
 import scala.util.{Failure, Success}
 
@@ -32,8 +34,9 @@ object WebActions {
     }
   }
 
-  implicit class BodyUtil(body: ReadableStream[Uint8Array]) {
-    def text: Future[String] = body.getReader().read().toFuture.map(_.value.map(_.toChar).mkString(""))
+  implicit class ResponseUtil(response: Response) {
+    def getJson: Future[JsValue] = response.json().toFuture.map(any => Json.parse(scala.scalajs.js.JSON.stringify(any)))
+    def getText: Future[String] = response.text().toFuture
   }
 
   def login(userCredential: UserCredential, nextPageOption: Option[Page] = None): Unit = {
@@ -83,6 +86,17 @@ object WebActions {
       case Success(response) =>
         response.status match {
           case 200 =>
+            response.getJson.onComplete {
+              case Success(jsValue) =>
+                Json.fromJson[UserPublic](jsValue) match {
+                  case JsSuccess(userPublic, _) =>
+                    Store.updateChatState(_.copy(userPublicOption = Some(userPublic)))
+                  case JsError(errors) =>
+                    window.console.error(errors)
+                }
+              case Failure(error) =>
+                throw error
+            }
             nextPageOption.foreach(gotoPage)
           case _ =>
         }
@@ -96,16 +110,41 @@ object WebActions {
       case Success(response) =>
         response.status match {
           case 200 =>
-            response.body.text.onComplete {
-              case Success(text) =>
-                Json.fromJson[ChatRooms](Json.parse(text)) match {
+            response.getJson.onComplete {
+              case Success(jsValue) =>
+                Json.fromJson[ChatRooms](jsValue) match {
                   case JsSuccess(chatRooms, _) =>
-                    window.console.info(chatRooms.toString)
-                  case JsError(error) =>
-                    window.console.error(error)
+                    Store.updateChatState(_.copy(chatRoomsOption = Some(chatRooms)))
+                  case JsError(errors) =>
+                    window.console.error(errors)
                 }
               case Failure(error) =>
-                window.console.error(error.getMessage)
+                throw error
+            }
+          case _ =>
+        }
+    }
+  }
+
+  def createChatRoom(newChatRoom: NewChatRoom): Unit = {
+    APIClient.createChatRoom(newChatRoom).map(handleUnauthorized).onComplete {
+      case Failure(error) =>
+        throw error
+      case Success(response) =>
+        response.status match {
+          case 200 =>
+            response.getJson.onComplete {
+              case Success(jsValue) =>
+                Json.fromJson[ChatRoom](jsValue) match {
+                  case JsSuccess(chatRoom, _) =>
+                    Store.updateChatState(chatState => chatState.copy(chatRoomsOption = chatState.chatRoomsOption.map{ chatRooms =>
+                      chatRooms.copy(rooms = chatRoom +: chatRooms.rooms)
+                    }))
+                  case JsError(errors) =>
+                    window.console.error(errors)
+                }
+              case Failure(error) =>
+                throw error
             }
           case _ =>
         }

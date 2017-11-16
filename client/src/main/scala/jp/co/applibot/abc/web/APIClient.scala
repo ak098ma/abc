@@ -66,4 +66,17 @@ object APIClient {
     )
     fetch(path, request).toFuture
   }
+
+  def createChatRoom(newChatRoom: NewChatRoom): Future[Response] = {
+    val path = restV1(_ / "secure" / "rooms")
+    val headers = new Headers()
+    headers.append("Content-Type", "application/json")
+    val request = RequestInit(
+      method = POST,
+      body = Json.toJson(newChatRoom).toString(),
+      headers = headers,
+      credentials = RequestCredentials.include,
+    )
+    fetch(path, request).toFuture
+  }
 }
