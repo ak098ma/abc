@@ -8,5 +8,5 @@ trait UserStore {
   def add(user: User)(implicit executor: ExecutionContext): Future[Boolean]
   def get(userCredential: UserCredential)(implicit executor: ExecutionContext): Future[Option[User]]
   def get(id: String)(implicit executor: ExecutionContext): Future[Option[UserPublic]]
-  def delete(userCredential: UserCredential)(implicit executor: ExecutionContext): Future[Boolean]
+  def delete(userCredential: UserCredential)(implicit executor: ExecutionContext): Future[Option[User]]
 }

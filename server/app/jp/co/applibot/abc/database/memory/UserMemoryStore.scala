@@ -12,7 +12,7 @@ class UserMemoryStore extends UserStore {
   private var users: Seq[User] = Seq.empty[User] :+ User(id = "test", nickname = "test", password = "test")
 
   override def add(user: User)(implicit executor: ExecutionContext): Future[Boolean] = Future {
-    users = users :+ user
+    users = user +: users
     true
   }
 
@@ -24,10 +24,9 @@ class UserMemoryStore extends UserStore {
     users.find(_.id == id).map(user => UserPublic(id = user.id, nickname = user.nickname))
   }
 
-  override def delete(userCredential: UserCredential)(implicit executor: ExecutionContext): Future[Boolean] = Future {
-    val initialLength = users.length
-    users = users.filterNot(user => user.id == userCredential.id && user.password == userCredential.password)
-    val resultLength = users.length
-    initialLength != resultLength
+  override def delete(userCredential: UserCredential)(implicit executor: ExecutionContext): Future[Option[User]] = Future {
+    val (toDelete, toPersist) = users.partition(user => user.id == userCredential.id && user.password == userCredential.password)
+    users = toPersist
+    toDelete.headOption
   }
 }
