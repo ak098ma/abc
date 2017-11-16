@@ -15,7 +15,13 @@ trait Chat {
   class Backend(override val bs: BackendScope[Props, State]) extends BackendUtils[Props, State] {
     def render(props: Props) = {
       <.div(
-        "Chat"
+        "Chat",
+        <.div(
+          <.button(
+            "Logout",
+            ^.onClick --> handleLogout
+          )
+        )
       )
     }
 
@@ -28,6 +34,10 @@ trait Chat {
 
     def componentWillUnmount: Callback = Callback {
       Store.unsubscribe(update)
+    }
+
+    def handleLogout: Callback = Callback {
+      WebActions.logout()
     }
   }
 

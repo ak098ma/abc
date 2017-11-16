@@ -51,7 +51,6 @@ trait Login {
     def componentWillMount: Callback = bs.props.map { props =>
       Store.subscribe(update)
       Store.update(_.copy(router = Some(props)))
-      WebActions.fetchUser()
     }
 
     def moveToLogin: Callback = Callback {
@@ -73,7 +72,7 @@ trait Login {
     }
 
     def handleClickLogin: Callback = callbackWithPS { (props, state) =>
-      WebActions.login(UserCredential(id = state.login.id, password = state.login.password))
+      WebActions.login(UserCredential(id = state.login.id, password = state.login.password), nextPageOption = Some(Page.Chat))
     }
 
     def handleClickNewUser: Callback = bs.props.flatMap(_.set(Page.SignUp))

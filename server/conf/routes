@@ -18,3 +18,4 @@ GET         /rest/v1/secure/rooms       jp.co.applibot.abc.controllers.RestAPI.g
 POST        /rest/v1/secure/rooms       jp.co.applibot.abc.controllers.RestAPI.createChatRoom
 POST        /rest/v1/sign-up            jp.co.applibot.abc.controllers.RestAPI.signUp
 POST        /rest/v1/login              jp.co.applibot.abc.controllers.RestAPI.login
+POST        /rest/v1/logout             jp.co.applibot.abc.controllers.RestAPI.logout

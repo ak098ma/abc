@@ -49,6 +49,10 @@ class RestAPI @Inject()(secureAction: SecureAction, cc: ControllerComponents, us
     }
   }
 
+  def logout: Action[AnyContent] = Action { implicit request =>
+    Ok("").withNewSession
+  }
+
   def getUser: Action[AnyContent] = secureAction.async { implicit request =>
     Future.successful(Ok(Json.prettyPrint(Json.toJson(request.userPublic))).refreshSession)
   }

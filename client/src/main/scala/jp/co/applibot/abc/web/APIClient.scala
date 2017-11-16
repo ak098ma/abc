@@ -40,6 +40,15 @@ object APIClient {
     fetch(path, request).toFuture
   }
 
+  def logout: Future[Response] = {
+    val path = restV1(_  / "logout")
+    val request = RequestInit(
+      method = POST,
+      credentials = RequestCredentials.include,
+    )
+    fetch(path, request).toFuture
+  }
+
   def getUser: Future[Response] = {
     val path = restV1(_ / "secure" / "user")
     val request = RequestInit(

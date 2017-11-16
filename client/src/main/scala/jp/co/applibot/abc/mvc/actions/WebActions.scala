@@ -24,48 +24,66 @@ object WebActions {
     response
   }
 
+  private def gotoPage(page: Page): Unit = {
+    Store.getState.router.foreach { routerCtl =>
+      if (window.location.pathname != routerCtl.pathFor(page).value) {
+        routerCtl.set(page).runNow()
+      }
+    }
+  }
+
   implicit class BodyUtil(body: ReadableStream[Uint8Array]) {
     def text: Future[String] = body.getReader().read().toFuture.map(_.value.map(_.toChar).mkString(""))
   }
 
-  def login(userCredential: UserCredential): Unit = {
+  def login(userCredential: UserCredential, nextPageOption: Option[Page] = None): Unit = {
     APIClient.login(userCredential).onComplete {
       case Failure(error) =>
         throw error
       case Success(response) =>
         response.status match {
           case 200 =>
-            Store.getState.router.foreach(_.set(Page.Chat).runNow())
+            nextPageOption.foreach(gotoPage)
           case _ =>
         }
     }
   }
 
-  def signUp(user: User): Unit = {
+  def logout(nextPageOption: Option[Page] = Some(Page.Login)): Unit = {
+    APIClient.logout.onComplete {
+      case Failure(error) =>
+        throw error
+      case Success(response) =>
+        response.status match {
+          case 200 =>
+            nextPageOption.foreach(gotoPage)
+          case _ =>
+        }
+    }
+  }
+
+  def signUp(user: User, nextPageOption: Option[Page] = Some(Page.Login)): Unit = {
     APIClient.signUp(user).onComplete {
       case Failure(error) =>
         throw error
       case Success(response) =>
         response.status match {
           case 200 =>
+            nextPageOption.foreach(gotoPage)
           case 400 =>
           case _ =>
         }
     }
   }
 
-  def fetchUser(): Unit = {
+  def fetchUser(nextPageOption: Option[Page] = None): Unit = {
     APIClient.getUser.map(handleUnauthorized).onComplete {
       case Failure(error) =>
         throw error
       case Success(response) =>
         response.status match {
           case 200 =>
-            Store.getState.router.foreach { routerCtl =>
-              if (window.location.pathname != routerCtl.pathFor(Page.Chat).value) {
-                routerCtl.set(Page.Chat).runNow()
-              }
-            }
+            nextPageOption.foreach(gotoPage)
           case _ =>
         }
     }
@@ -89,6 +107,7 @@ object WebActions {
               case Failure(error) =>
                 window.console.error(error.getMessage)
             }
+          case _ =>
         }
     }
   }
