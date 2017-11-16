@@ -127,7 +127,7 @@ trait Chat {
     }
 
     def handleCreateChatRoom: Callback = bs.state.map { state =>
-      WebActions.createChatRoom(NewChatRoom(title = state.chat.titleOfNewChatRoom, users = Seq("test")))
+      WebActions.createChatRoom(NewChatRoom(title = state.chat.titleOfNewChatRoom, users = Seq(), isPrivate = false))
       ChatActions.closeCreateChatRoomDialog()
     }
 

@@ -17,7 +17,7 @@ class ChatRoomMemoryStore extends ChatRoomStore {
   }
 
   override def add(newChatRoom: NewChatRoom)(implicit ec: ExecutionContext): Future[ChatRoom] = Future {
-    val chatRoom = ChatRoom(id = UUID.randomUUID().toString, title = newChatRoom.title, users = newChatRoom.users)
+    val chatRoom = ChatRoom(id = UUID.randomUUID().toString, title = newChatRoom.title, users = newChatRoom.users, isPrivate = false)
     chatRooms = chatRoom +: chatRooms
     chatRoom
   }
