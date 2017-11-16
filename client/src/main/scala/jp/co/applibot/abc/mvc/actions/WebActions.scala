@@ -2,7 +2,7 @@ package jp.co.applibot.abc.mvc.actions
 
 import jp.co.applibot.abc.shared.models._
 import jp.co.applibot.abc.web.APIClient
-import jp.co.applibot.abc.{Page, Store}
+import jp.co.applibot.abc.{Page, Store, TokenManager}
 import org.scalajs.dom.experimental.Response
 import org.scalajs.dom.raw.{CloseEvent, ErrorEvent, MessageEvent, WebSocket}
 import org.scalajs.dom.{Event, window}
@@ -46,23 +46,21 @@ object WebActions {
       case Success(response) =>
         response.status match {
           case 200 =>
-            nextPageOption.foreach(gotoPage)
+            response.text().toFuture.onComplete {
+              case Failure(parseError) =>
+                throw parseError
+              case Success(text) =>
+                TokenManager.update(Json.fromJson[JsonWebToken](Json.parse(text)).get.token)
+                nextPageOption.foreach(gotoPage)
+            }
           case _ =>
         }
     }
   }
 
   def logout(nextPageOption: Option[Page] = Some(Page.Login)): Unit = {
-    APIClient.logout.onComplete {
-      case Failure(error) =>
-        throw error
-      case Success(response) =>
-        response.status match {
-          case 200 =>
-            nextPageOption.foreach(gotoPage)
-          case _ =>
-        }
-    }
+    TokenManager.delete()
+    nextPageOption.foreach(gotoPage)
   }
 
   def signUp(user: User, nextPageOption: Option[Page] = Some(Page.Login)): Unit = {
@@ -89,9 +87,9 @@ object WebActions {
 
   val unload: js.Function1[Event, Unit] = (_) => closeWebSocket()
 
-  def createWebSocket(): Unit = {
+  def createWebSocket(token: String): Unit = {
     if (Store.getState.chat.webSocketOption.isEmpty) {
-      val socket = new WebSocket(s"ws://${window.location.hostname}:${window.location.port}/chat/socket")
+      val socket = new WebSocket(s"ws://${window.location.hostname}:${window.location.port}/chat/socket?token=$token")
       socket.addEventListener("open", { _: Event =>
         println("connected.")
       })

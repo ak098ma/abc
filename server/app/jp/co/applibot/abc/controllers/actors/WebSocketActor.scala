@@ -1,9 +1,9 @@
 package jp.co.applibot.abc.controllers.actors
 
 import akka.actor._
-import jp.co.applibot.abc.shared.models.ClientToServerEvent
+import jp.co.applibot.abc.shared.models.{ClientToServerEvent, UserPublic}
 
-class WebSocketActor(val webSocketRef: ActorRef, val socketManager: ActorRef) extends Actor {
+class WebSocketActor(webSocketRef: ActorRef, socketManager: ActorRef, userPublic: UserPublic) extends Actor {
   override def preStart(): Unit = {
     socketManager ! Join(Service, webSocketRef)
   }

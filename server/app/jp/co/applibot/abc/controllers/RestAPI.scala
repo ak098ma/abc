@@ -5,18 +5,25 @@ import javax.inject._
 import jp.co.applibot.abc.database.interface.{ChatRoomStore, MessageStore, UserStore}
 import jp.co.applibot.abc.mvc.actions.SecureAction
 import jp.co.applibot.abc.mvc.requests.SecureRequest
-import jp.co.applibot.abc.shared.models.{ChatRooms, NewChatRoom, User, UserCredential}
-import jp.co.applibot.abc.utils.UserIdSession
+import jp.co.applibot.abc.shared.models._
+import jp.co.applibot.abc.utils.UserIdClaim
+import play.api.http.{SecretConfiguration, SessionConfiguration}
 import play.api.libs.json._
 import play.api.mvc._
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class RestAPI @Inject()(secureAction: SecureAction, cc: ControllerComponents, userStore: UserStore, chatRoomStore: ChatRoomStore, messageStore: MessageStore)(implicit executor: ExecutionContext) extends AbstractController(cc) {
+class RestAPI @Inject()(secureAction: SecureAction, cc: ControllerComponents,
+                        userStore: UserStore,
+                        chatRoomStore: ChatRoomStore,
+                        messageStore: MessageStore,
+                        secretConfiguration: SecretConfiguration,
+                        sessionConfiguration: SessionConfiguration)(implicit executor: ExecutionContext) extends AbstractController(cc) {
 
+  private val jwtCodec = DefaultJWTCookieDataCodec(secretConfiguration, sessionConfiguration.jwt)
   implicit class SessionUtil(result: Result) {
-    def refreshSession[A](implicit secureRequest: SecureRequest[A]): Result = result.withSession(UserIdSession(secureRequest.userPublic.id))
+    def refreshSession[A](implicit secureRequest: SecureRequest[A]): Result = result.withSession(UserIdClaim(secureRequest.userPublic.id))
   }
 
   def signUp: Action[JsValue] = Action(parse.json).async { implicit request =>
@@ -40,7 +47,8 @@ class RestAPI @Inject()(secureAction: SecureAction, cc: ControllerComponents, us
         val userCredential = jsSuccess.get
         userStore.get(userCredential).map {
           case Some(user) =>
-            Ok("").withSession(UserIdSession(user.id))
+            val jwt = jwtCodec.encode(Map(UserIdClaim(user.id)))
+            Ok(JsonWebToken(jwt).stringify)
           case None =>
             Unauthorized(s"id or password may be wrong.")
         }
@@ -49,8 +57,8 @@ class RestAPI @Inject()(secureAction: SecureAction, cc: ControllerComponents, us
     }
   }
 
-  def logout: Action[AnyContent] = Action { implicit request =>
-    Ok("").withNewSession
+  def refresh: Action[AnyContent] = secureAction { implicit request =>
+    Ok(JsonWebToken(jwtCodec.encode(Map(UserIdClaim(request.userPublic.id)))).stringify)
   }
 
   def getUser: Action[AnyContent] = secureAction.async { implicit request =>

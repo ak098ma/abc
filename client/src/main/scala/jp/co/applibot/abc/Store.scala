@@ -7,7 +7,8 @@ object Store extends flux.Store(State(
   router = None,
   login = LoginState(
     id = "",
-    password = ""),
+    password = "",
+    tokenOption = TokenManager.getToken),
   signUp = SignUpState(
     id = "",
     nickname = "",
