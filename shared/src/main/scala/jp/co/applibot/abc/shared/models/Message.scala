@@ -1,5 +1,9 @@
 package jp.co.applibot.abc.shared.models
 
-import java.util.Date
+import play.api.libs.json.Json
 
-case class Message(id: String, message: String, date: Date)
+case class Message(id: String, message: String, timestamp: Long)
+
+object Message {
+  implicit val format = Json.format[Message]
+}

@@ -13,6 +13,14 @@ class WebSocketActor(val webSocketRef: ActorRef, val socketManager: ActorRef) ex
   }
 
   override def receive = { case event: ClientToServerEvent =>
-      socketManager ! Send(Service, event.message)
+    event.joinRoomOption.foreach { roomId =>
+      socketManager ! Join(Room(roomId), webSocketRef)
+    }
+    event.leaveRoomOption.foreach { roomId =>
+      socketManager ! Leave(Room(roomId), webSocketRef)
+    }
+    event.createRoomOption.foreach { newChatRoom =>
+      socketManager ! CreateChatRoom(newChatRoom, webSocketRef)
+    }
   }
 }

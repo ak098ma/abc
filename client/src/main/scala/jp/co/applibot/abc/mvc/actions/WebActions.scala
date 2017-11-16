@@ -3,15 +3,14 @@ package jp.co.applibot.abc.mvc.actions
 import jp.co.applibot.abc.shared.models._
 import jp.co.applibot.abc.web.APIClient
 import jp.co.applibot.abc.{Page, Store}
-import org.scalajs.dom.experimental.{ReadableStream, Response}
-import org.scalajs.dom.window
-import play.api.libs.json.{JsError, JsSuccess, JsValue, Json}
+import org.scalajs.dom.experimental.Response
+import org.scalajs.dom.raw.{CloseEvent, ErrorEvent, MessageEvent, WebSocket}
+import org.scalajs.dom.{Event, window}
+import play.api.libs.json.{JsValue, Json}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.scalajs.js
-import scala.scalajs.js.Promise
-import scala.scalajs.js.typedarray.Uint8Array
 import scala.util.{Failure, Success}
 
 object WebActions {
@@ -36,6 +35,7 @@ object WebActions {
 
   implicit class ResponseUtil(response: Response) {
     def getJson: Future[JsValue] = response.json().toFuture.map(any => Json.parse(scala.scalajs.js.JSON.stringify(any)))
+
     def getText: Future[String] = response.text().toFuture
   }
 
@@ -79,75 +79,56 @@ object WebActions {
     }
   }
 
-  def fetchUser(nextPageOption: Option[Page] = None): Unit = {
-    APIClient.getUser.map(handleUnauthorized).onComplete {
-      case Failure(error) =>
-        throw error
-      case Success(response) =>
-        response.status match {
-          case 200 =>
-            response.getJson.onComplete {
-              case Success(jsValue) =>
-                Json.fromJson[UserPublic](jsValue) match {
-                  case JsSuccess(userPublic, _) =>
-                    Store.updateChatState(_.copy(userPublicOption = Some(userPublic)))
-                  case JsError(errors) =>
-                    window.console.error(errors)
-                }
-              case Failure(error) =>
-                throw error
-            }
-            nextPageOption.foreach(gotoPage)
-          case _ =>
-        }
-    }
-  }
-
-  def fetchChatRooms(): Unit = {
-    APIClient.getChatRooms.map(handleUnauthorized).onComplete {
-      case Failure(error) =>
-        throw error
-      case Success(response) =>
-        response.status match {
-          case 200 =>
-            response.getJson.onComplete {
-              case Success(jsValue) =>
-                Json.fromJson[ChatRooms](jsValue) match {
-                  case JsSuccess(chatRooms, _) =>
-                    Store.updateChatState(_.copy(chatRoomsOption = Some(chatRooms)))
-                  case JsError(errors) =>
-                    window.console.error(errors)
-                }
-              case Failure(error) =>
-                throw error
-            }
-          case _ =>
-        }
-    }
-  }
-
   def createChatRoom(newChatRoom: NewChatRoom): Unit = {
-    APIClient.createChatRoom(newChatRoom).map(handleUnauthorized).onComplete {
-      case Failure(error) =>
-        throw error
-      case Success(response) =>
-        response.status match {
-          case 200 =>
-            response.getJson.onComplete {
-              case Success(jsValue) =>
-                Json.fromJson[ChatRoom](jsValue) match {
-                  case JsSuccess(chatRoom, _) =>
-                    Store.updateChatState(chatState => chatState.copy(chatRoomsOption = chatState.chatRoomsOption.map{ chatRooms =>
-                      chatRooms.copy(rooms = chatRoom +: chatRooms.rooms)
-                    }))
-                  case JsError(errors) =>
-                    window.console.error(errors)
-                }
-              case Failure(error) =>
-                throw error
-            }
-          case _ =>
-        }
+    Store.getState.chat.webSocketOption.foreach { socket =>
+      socket.send(ClientToServerEvent(createRoomOption = Some(newChatRoom)).stringify)
     }
+  }
+
+  private def closeWebSocket(): Unit = Store.getState.chat.webSocketOption.foreach(_.close(code = 1000, reason = "unload"))
+
+  val unload: js.Function1[Event, Unit] = (_) => closeWebSocket()
+
+  def createWebSocket(): Unit = {
+    if (Store.getState.chat.webSocketOption.isEmpty) {
+      val socket = new WebSocket(s"ws://${window.location.hostname}:${window.location.port}/chat/socket")
+      socket.addEventListener("open", { _: Event =>
+        println("connected.")
+      })
+      socket.addEventListener("message", { event: MessageEvent =>
+        window.console.log(event)
+        val serverToClientEvent = Json.fromJson[ServerToClientEvent](Json.parse(event.data.toString)).get
+        serverToClientEvent.chatRoomsOption.foreach { chatRooms =>
+          chatRooms.rooms.foreach { chatRoom =>
+            socket.send(ClientToServerEvent(joinRoomOption = Some(chatRoom.id)).stringify)
+          }
+        }
+        serverToClientEvent.newChatRoomOption.foreach { chatRoom =>
+          socket.send(ClientToServerEvent(joinRoomOption = Some(chatRoom.id)).stringify)
+          Store.updateChatState{ state =>
+            state.copy(chatRoomsOption = state.chatRoomsOption.map(_.add(chatRoom)))
+          }
+        }
+        serverToClientEvent.chatRoomsOption.foreach { chatRooms =>
+          Store.updateChatState(_.copy(chatRoomsOption = Some(chatRooms)))
+        }
+        serverToClientEvent.userPublicOption.foreach { userPublic =>
+          Store.updateChatState(_.copy(userPublicOption = Some(userPublic)))
+        }
+      })
+      socket.addEventListener("error", { event: ErrorEvent =>
+        window.console.error(event)
+      })
+      socket.addEventListener("close", { event: CloseEvent =>
+        window.console.warn(event)
+      })
+      Store.updateChatState(_.copy(webSocketOption = Some(socket)))
+      window.addEventListener("unload", unload)
+    }
+  }
+
+  def deleteWebSocket(): Unit = {
+    window.removeEventListener("unload", unload)
+    closeWebSocket()
   }
 }

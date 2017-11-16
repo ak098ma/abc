@@ -110,14 +110,12 @@ trait Chat {
     def componentWillMount: Callback = bs.props.map { props =>
       Store.subscribe(update)
       Store.update(_.copy(router = Some(props)))
-      WebActions.fetchUser()
-      WebActions.fetchChatRooms()
-      ChatActions.createWebSocket()
+      WebActions.createWebSocket()
     }
 
     def componentWillUnmount: Callback = Callback {
       Store.unsubscribe(update)
-      ChatActions.deleteWebSocket()
+      WebActions.deleteWebSocket()
     }
 
     def handleLogout: Callback = Callback {

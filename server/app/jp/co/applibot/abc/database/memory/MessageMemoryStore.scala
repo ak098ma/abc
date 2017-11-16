@@ -18,7 +18,7 @@ class MessageMemoryStore extends MessageStore {
 
   override def add(chatRoomId: String, newMessage: NewMessage)(implicit ec: ExecutionContext): Future[Message] = Future {
     if (!messages.keys.exists(_ == chatRoomId)) messages.updated(chatRoomId, Seq.empty[Message])
-    val message = Message(id = UUID.randomUUID().toString, message = newMessage.message, date = new Date)
+    val message = Message(id = UUID.randomUUID().toString, message = newMessage.message, timestamp = (new Date).getTime)
     messages = messages.updated(chatRoomId, message +: messages(chatRoomId))
     message
   }
