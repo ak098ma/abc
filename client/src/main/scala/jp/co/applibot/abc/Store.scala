@@ -18,6 +18,7 @@ object Store extends flux.Store(State(
     isCreateNewChatRoomDialogOpen = false,
     titleOfNewChatRoom = "",
     selectedChatRoomOption = None,
+    webSocketOption = None,
   )
 )) {
   def updateChatState(modify: ChatState => ChatState): Unit = update(state => state.copy(chat = modify(state.chat)))
