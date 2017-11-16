@@ -25,7 +25,7 @@ class ChatController @Inject()(cc: ControllerComponents,
   implicit val messageFlowTransformer = MessageFlowTransformer.jsonMessageFlowTransformer[ClientToServerEvent, ServerToClientEvent]
   val socketManager: ActorRef = system.actorOf(Props(new SocketManager(userStore, chatRoomStore)))
 
-  def socket = WebSocket.acceptOrResult[ClientToServerEvent, ServerToClientEvent] { request =>  // TODO: request.sessionを処理して認証かけること
+  def socket = WebSocket.acceptOrResult[ClientToServerEvent, ServerToClientEvent] { request =>
     request.getQueryString("token") match {
       case None =>
         Future.successful(Left(Unauthorized))
