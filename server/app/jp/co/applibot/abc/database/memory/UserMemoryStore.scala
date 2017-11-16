@@ -11,9 +11,9 @@ import scala.concurrent.{ExecutionContext, Future}
 class UserMemoryStore extends UserStore {
   private var users: Seq[User] = Seq.empty[User] :+ User(id = "test", nickname = "test", password = "test")
 
-  override def add(user: User)(implicit executor: ExecutionContext): Future[Boolean] = Future {
+  override def add(user: User)(implicit executor: ExecutionContext): Future[User] = Future {
     users = user +: users
-    true
+    user
   }
 
   override def get(userCredential: UserCredential)(implicit executor: ExecutionContext): Future[Option[User]] = Future {

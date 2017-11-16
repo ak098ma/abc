@@ -9,13 +9,14 @@ trait MessageStore {
   /**
     * 任意のメッセージのリストを返す。
     *
+    * @param chatRoomId メッセージが所属するチャットルームのID。
     * @param from  メッセージのindex。このindexのメッセージを含む。
     * @param until メッセージのindex。このindexのメッセージは含まない。
     * @return fromから、until未満のindexのメッセージのリスト。
     */
-  def get(from: Int, until: Int)(implicit ec: ExecutionContext): Future[Seq[Message]]
+  def get(chatRoomId: String, from: Int, until: Int)(implicit ec: ExecutionContext): Future[Seq[Message]]
 
-  def add(message: NewMessage)(implicit ec: ExecutionContext): Future[Boolean]
+  def add(chatRoomId: String, newMessage: NewMessage)(implicit ec: ExecutionContext): Future[Message]
 
-  def delete(message: Message)(implicit ec: ExecutionContext): Future[Option[Message]]
+  def delete(chatRoomId: String, message: Message)(implicit ec: ExecutionContext): Future[Option[Message]]
 }

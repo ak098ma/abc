@@ -22,12 +22,7 @@ class RestAPI @Inject()(secureAction: SecureAction, cc: ControllerComponents, st
           case Some(_) =>
             Future { Conflict("this user is already registered.") }
           case None =>
-            store.add(user).map {
-              case true =>
-                Ok("")
-              case false =>
-                InternalServerError("")
-            }
+            store.add(user).map(_ => Ok(""))
         }
       case jsError: JsError =>
         Future {BadRequest(jsError.errors.mkString(", ")) }
