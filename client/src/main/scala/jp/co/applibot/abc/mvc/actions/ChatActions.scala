@@ -19,4 +19,8 @@ object ChatActions {
   def showRoom(chatRoom: ChatRoom): Unit = {
     Store.updateChatState(_.copy(selectedChatRoomOption = Some(chatRoom)))
   }
+
+  def setMessage(message: String): Unit = {
+    Store.updateChatState(_.copy(editingMessage = message))
+  }
 }

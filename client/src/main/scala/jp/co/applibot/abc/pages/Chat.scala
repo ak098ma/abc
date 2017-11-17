@@ -5,10 +5,12 @@ import japgolly.scalajs.react.component.Scala.Unmounted
 import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.html_<^._
 import jp.co.applibot.abc.models.State
-import jp.co.applibot.abc.mvc.actions.{ChatActions, LoginActions, WebActions}
+import jp.co.applibot.abc.mvc.actions.{ChatActions, WebActions}
 import jp.co.applibot.abc.react.BackendUtils
 import jp.co.applibot.abc.shared.models._
 import jp.co.applibot.abc.{Page, Store, TokenManager}
+
+import scala.scalajs.js.Date
 
 trait Chat {
   type Props = RouterCtl[Page]
@@ -29,24 +31,33 @@ trait Chat {
           <.div(
             renderCreateChatRoom(state.chat.titleOfNewChatRoom, state.chat.isCreateNewChatRoomDialogOpen),
             <.div(
-              <.div("ChatRooms"),
-              renderChatRooms(state.chat.chatRoomsOption)
+              <.div("参加しているチャットルーム"),
+              renderJoinedChatRooms(state.chat.joinedChatRoomsOption)
             ),
+            <.div(
+              <.div("参加出来るチャットルーム"),
+              renderAvailableChatRooms(state.chat.joinedChatRoomsOption, state.chat.availableChatRoomsOption)
+            )
           ),
           <.div(
-            renderChatRoom(state.chat.selectedChatRoomOption)
-          )
+            state.chat.selectedChatRoomOption match {
+              case None =>
+                <.div("チャットルームにJoinしてください")
+              case Some(chatRoom) =>
+                renderMessages(state.chat.messages.get(chatRoom.id), state.chat.editingMessage)
+            }
+          ),
         ),
       )
     }
 
-    def renderChatRooms(chatRoomsOption: Option[ChatRooms]) = {
+    def renderJoinedChatRooms(chatRoomsOption: Option[ChatRooms]) = {
       <.div(
         chatRoomsOption match {
           case Some(chatRooms) =>
             val rows = chatRooms.rooms.map { chatRoom =>
               <.div(
-                ^.key := chatRoom.id,
+                ^.key := s"joined_${chatRoom.id}",
                 <.button(
                   chatRoom.title,
                   ^.onClick --> handleShowRoom(chatRoom),
@@ -62,6 +73,52 @@ trait Chat {
             "Loading..."
         }
       )
+    }
+
+    def renderMessages(messagesOption: Option[Seq[Message]], editingMessage: String) = {
+      <.div(
+        <.div(
+          ^.height := "300px",
+          ^.overflowY := "scroll",
+          messagesOption.map { messages =>
+            messages.reverse.map { message =>
+              <.div(
+                ^.key := s"message_${message.id}",
+                <.label(s"msg: ${message.message}"),
+                <.label(s"date: ${new Date(message.timestamp)}"),
+              )
+            }.toVdomArray
+          }.getOrElse(<.div("はじめての投稿をしよう！")),
+        ),
+        <.div(
+          <.input(
+            ^.value := editingMessage,
+            ^.placeholder := "Type something you want...",
+            ^.onChange ==> handleChangeMessage,
+          ),
+          <.button(
+            "送信!",
+            ^.onClick --> handleSendMessage
+          ),
+        )
+      )
+    }
+
+    def renderAvailableChatRooms(joinedOption: Option[ChatRooms], availableOption: Option[ChatRooms]) = {
+      (joinedOption zip availableOption).headOption.map { case (joined: ChatRooms, available: ChatRooms) =>
+        val rows = available.rooms.filterNot(joined.rooms.contains).map { room =>
+          <.div(
+            ^.key := s"available_${room.id}",
+            <.label(room.title),
+            <.button("Join!", ^.onClick --> handleJoinRoom(room))
+          )
+        }
+        if (rows.isEmpty) {
+          <.div("参加出来るチャットルームがありません。")
+        } else {
+          rows.toVdomArray
+        }
+      }.getOrElse(<.div("Loading..."))
     }
 
     def renderCreateChatRoom(title: String, isOpen: Boolean) = {
@@ -96,7 +153,7 @@ trait Chat {
     }
 
     def renderChatRoom(chatRoomOption: Option[ChatRoom]) = {
-      chatRoomOption.map{ chatRoom =>
+      chatRoomOption.map { chatRoom =>
         <.div(
           <.div(s"id - ${chatRoom.id}"),
           <.div(s"title - ${chatRoom.title}"),
@@ -147,6 +204,22 @@ trait Chat {
 
     def handleShowRoom(chatRoom: ChatRoom): Callback = Callback {
       ChatActions.showRoom(chatRoom)
+      WebActions.subscribeChatRoom(chatRoom)
+    }
+
+    def handleJoinRoom(chatRoom: ChatRoom): Callback = Callback {
+      WebActions.joinChatRoom(chatRoom)
+    }
+
+    def handleChangeMessage(event: ReactEventFromInput): Callback = Callback {
+      val value = event.target.value
+      ChatActions.setMessage(value)
+    }
+
+    def handleSendMessage: Callback = Callback {
+      Store.getState.chat.selectedChatRoomOption.foreach { chatRoom =>
+        WebActions.sendMessage(chatRoom, Store.getState.chat.editingMessage)
+      }
     }
   }
 

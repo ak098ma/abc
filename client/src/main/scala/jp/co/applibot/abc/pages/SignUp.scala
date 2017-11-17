@@ -81,7 +81,7 @@ trait SignUp {
     }
 
     def handleClickSignUp: Callback = callbackWithPS { (props, state) =>
-      WebActions.signUp(User(id = state.signUp.id, nickname = state.signUp.nickname, password = state.signUp.password))
+      WebActions.signUp(User(id = state.signUp.id, nickname = state.signUp.nickname, password = state.signUp.password, joiningChatRooms = Seq.empty))
     }
 
     def handleClickAlreadyHaveAnAccount: Callback = bs.props.flatMap(_.set(Page.Login))

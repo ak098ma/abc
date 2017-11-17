@@ -6,6 +6,10 @@ case class ChatRooms(rooms: Seq[ChatRoom]) {
   def add(chatRoom: ChatRoom): ChatRooms = {
     ChatRooms(chatRoom +: rooms)
   }
+
+  def remove(chatRoom: ChatRoom): ChatRooms = {
+    ChatRooms(rooms.filterNot(_.id == chatRoom.id))
+  }
 }
 
 object ChatRooms {

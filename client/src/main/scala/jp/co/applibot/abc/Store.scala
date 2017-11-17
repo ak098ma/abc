@@ -15,11 +15,14 @@ object Store extends flux.Store(State(
     password = ""),
   chat = ChatState(
     userPublicOption = None,
-    chatRoomsOption = None,
+    joinedChatRoomsOption = None,
+    availableChatRoomsOption = None,
     isCreateNewChatRoomDialogOpen = false,
     titleOfNewChatRoom = "",
     selectedChatRoomOption = None,
     webSocketOption = None,
+    messages = Map.empty,
+    editingMessage = "",
   )
 )) {
   def updateChatState(modify: ChatState => ChatState): Unit = update(state => state.copy(chat = modify(state.chat)))

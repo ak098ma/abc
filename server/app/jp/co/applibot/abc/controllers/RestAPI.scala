@@ -66,7 +66,7 @@ class RestAPI @Inject()(secureAction: SecureAction, cc: ControllerComponents,
   }
 
   def getChatRooms: Action[AnyContent] = secureAction.async { implicit request =>
-    chatRoomStore.get(request.userPublic.id).map{ chatRooms =>
+    chatRoomStore.list(request.userPublic.id).map{ chatRooms =>
       Ok(Json.toJson(ChatRooms(chatRooms)).toString()).refreshSession
     }
   }
