@@ -9,7 +9,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class UserMemoryStore extends UserStore {
-  private var users: Seq[User] = Seq.empty[User] :+ User("test1", "test1", "test1", Seq.empty) :+ User("test2", "test2", "test2", Seq.empty)
+  private var users: Seq[User] = Seq.empty[User]// :+ User("test1", "test1", "test1", Seq.empty) :+ User("test2", "test2", "test2", Seq.empty)
 
   override def add(user: User)(implicit executor: ExecutionContext): Future[User] = Future {
     users = user +: users
