@@ -2,16 +2,15 @@ package jp.co.applibot.abc.pages
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.component.Scala.Unmounted
-import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.html_<^._
+import jp.co.applibot.abc.Store
 import jp.co.applibot.abc.models.State
-import jp.co.applibot.abc.mvc.actions.{LoginActions, WebActions}
+import jp.co.applibot.abc.mvc.actions.LoginActions
 import jp.co.applibot.abc.react.BackendUtils
-import jp.co.applibot.abc.shared.models.UserCredential
-import jp.co.applibot.abc.{Page, Store}
+import jp.co.applibot.react.Router.Router
 
-trait Login {
-  type Props = RouterCtl[Page]
+object Login {
+  type Props = Router
 
   class Backend(override val bs: BackendScope[Props, State]) extends BackendUtils[Props, State] {
     def render(state: State) = {
@@ -50,12 +49,7 @@ trait Login {
 
     def componentWillMount: Callback = bs.props.map { props =>
       Store.subscribe(update)
-      Store.update(_.copy(router = Some(props)))
     }
-
-    def moveToLogin: Callback = Callback {
-      Store.getState.router.foreach(_.set(Page.Login).runNow())
-    } >> Callback.log("moved.")
 
     def componentWillUnmount = Callback {
       Store.unsubscribe(update)
@@ -72,10 +66,10 @@ trait Login {
     }
 
     def handleClickLogin: Callback = callbackWithPS { (props, state) =>
-      WebActions.login(UserCredential(id = state.login.id, password = state.login.password), nextPageOption = Some(Page.Chat))
+
     }
 
-    def handleClickNewUser: Callback = bs.props.flatMap(_.set(Page.SignUp))
+    def handleClickNewUser: Callback = Callback {}
   }
 
   private def login = ScalaComponent.builder[Props]("Login")

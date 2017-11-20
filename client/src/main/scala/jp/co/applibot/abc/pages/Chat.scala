@@ -2,18 +2,18 @@ package jp.co.applibot.abc.pages
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.component.Scala.Unmounted
-import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.html_<^._
 import jp.co.applibot.abc.models.State
 import jp.co.applibot.abc.mvc.actions.{ChatActions, WebActions}
 import jp.co.applibot.abc.react.BackendUtils
 import jp.co.applibot.abc.shared.models._
-import jp.co.applibot.abc.{Page, Store, TokenManager}
+import jp.co.applibot.abc.{Store, TokenManager}
+import jp.co.applibot.react.Router.Router
 
 import scala.scalajs.js.Date
 
-trait Chat {
-  type Props = RouterCtl[Page]
+object Chat {
+  type Props = Router
 
   class Backend(override val bs: BackendScope[Props, State]) extends BackendUtils[Props, State] {
     def render(state: State) = {
@@ -166,7 +166,6 @@ trait Chat {
 
     def componentWillMount: Callback = bs.props.map { props =>
       Store.subscribe(update)
-      Store.update(_.copy(router = Some(props)))
       TokenManager.getToken match {
         case None =>
           WebActions.logout()

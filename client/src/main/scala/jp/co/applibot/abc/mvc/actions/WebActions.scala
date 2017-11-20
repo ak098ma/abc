@@ -2,7 +2,7 @@ package jp.co.applibot.abc.mvc.actions
 
 import jp.co.applibot.abc.shared.models._
 import jp.co.applibot.abc.web.APIClient
-import jp.co.applibot.abc.{Page, Store, TokenManager}
+import jp.co.applibot.abc.{Store, TokenManager}
 import org.scalajs.dom.experimental.Response
 import org.scalajs.dom.raw.{CloseEvent, ErrorEvent, MessageEvent, WebSocket}
 import org.scalajs.dom.{Event, window}
@@ -20,7 +20,7 @@ object WebActions {
     def getText: Future[String] = response.text().toFuture
   }
 
-  def login(userCredential: UserCredential, nextPageOption: Option[Page] = None): Unit = {
+  def login(userCredential: UserCredential): Unit = {
     APIClient.login(userCredential).onComplete {
       case Failure(error) =>
         throw error
@@ -32,26 +32,24 @@ object WebActions {
                 throw parseError
               case Success(text) =>
                 TokenManager.update(Json.fromJson[JsonWebToken](Json.parse(text)).get.token)
-                nextPageOption.foreach(RouterActions.gotoPage)
             }
           case _ =>
         }
     }
   }
 
-  def logout(nextPageOption: Option[Page] = Some(Page.Login)): Unit = {
+  def logout(): Unit = {
     TokenManager.delete()
-    nextPageOption.foreach(RouterActions.gotoPage)
   }
 
-  def signUp(user: User, nextPageOption: Option[Page] = Some(Page.Login)): Unit = {
+  def signUp(user: User): Unit = {
     APIClient.signUp(user).onComplete {
       case Failure(error) =>
         throw error
       case Success(response) =>
         response.status match {
           case 200 =>
-            nextPageOption.foreach(RouterActions.gotoPage)
+            ???
           case 400 =>
           case _ =>
         }
@@ -131,7 +129,7 @@ object WebActions {
         }
       })
       socket.addEventListener("error", { _: ErrorEvent =>
-        RouterActions.gotoPage(Page.Login)
+        ???
       })
       socket.addEventListener("close", { _: CloseEvent =>
         Store.updateChatState(_.copy(webSocketOption = None))

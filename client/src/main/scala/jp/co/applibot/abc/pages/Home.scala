@@ -2,17 +2,29 @@ package jp.co.applibot.abc.pages
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
-import japgolly.scalajs.react.extra.router.RouterCtl
-import jp.co.applibot.abc.Page
+import jp.co.applibot.react.Router.Router
 
-trait Home {
-  type Props = RouterCtl[Page]
+object Home {
+  type Props = Router
 
   val home = ScalaComponent.builder[Props]("Home")
-    .stateless
-    .render_P( props =>
+    .initialState("")
+    .renderPS((bs, props, state) =>
       <.div(
-        <.h1("Welcome to Applibot Chat")
+        <.h1("Welcome to Applibot Chat"),
+        <.div(
+          "Goto...",
+        ),
+        <.div(
+          <.input(
+            ^.value := state,
+            ^.onChange ==> {(event: ReactEventFromInput) =>
+              val value = event.target.value
+              bs.modState(_ => value)
+            },
+            ^.onKeyDown ==> ((event: ReactKeyboardEventFromInput) => Callback.when(event.keyCode == 13)(props.push(state)))
+          )
+        ),
       )
     )
     .build

@@ -2,16 +2,16 @@ package jp.co.applibot.abc.pages
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.component.Scala.Unmounted
-import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.html_<^._
+import jp.co.applibot.abc.Store
 import jp.co.applibot.abc.models.State
 import jp.co.applibot.abc.mvc.actions.{SignUpActions, WebActions}
 import jp.co.applibot.abc.react.BackendUtils
 import jp.co.applibot.abc.shared.models.User
-import jp.co.applibot.abc.{Page, Store}
+import jp.co.applibot.react.Router.Router
 
-trait SignUp {
-  type Props = RouterCtl[Page]
+object SignUp {
+  type Props = Router
 
   class Backend(override val bs: BackendScope[Props, State]) extends BackendUtils[Props, State] {
     def render(state: State) = {
@@ -58,7 +58,6 @@ trait SignUp {
 
     def componentWillMount: Callback = bs.props.map { props =>
       Store.subscribe(update)
-      Store.update(_.copy(router = Some(props)))
     }
 
     def componentWillUnmount = Callback {
@@ -84,7 +83,7 @@ trait SignUp {
       WebActions.signUp(User(id = state.signUp.id, nickname = state.signUp.nickname, password = state.signUp.password, joiningChatRooms = Seq.empty))
     }
 
-    def handleClickAlreadyHaveAnAccount: Callback = bs.props.flatMap(_.set(Page.Login))
+    def handleClickAlreadyHaveAnAccount: Callback = Callback.empty
   }
 
   private val signUp = ScalaComponent.builder[Props]("SignUp")

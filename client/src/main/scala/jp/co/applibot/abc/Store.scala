@@ -4,7 +4,6 @@ import jp.co.applibot.abc.models._
 import jp.co.applibot.flux
 
 object Store extends flux.Store(State(
-  router = None,
   login = LoginState(
     id = "",
     password = "",
@@ -23,7 +22,7 @@ object Store extends flux.Store(State(
     webSocketOption = None,
     messages = Map.empty,
     editingMessage = "",
-  )
+  ),
 )) {
   def updateChatState(modify: ChatState => ChatState): Unit = update(state => state.copy(chat = modify(state.chat)))
   def updateLoginState(modify: LoginState => LoginState): Unit = update(state => state.copy(login = modify(state.login)))
