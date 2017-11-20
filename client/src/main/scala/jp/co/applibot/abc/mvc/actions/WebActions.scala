@@ -16,11 +16,7 @@ import scala.util.{Failure, Success}
 object WebActions {
   private def handleUnauthorized(response: Response): Response = {
     if (response.status == 401) {
-      Store.getState.router.foreach { routerCtl =>
-        if (window.location.pathname != routerCtl.pathFor(Page.Login).value) {
-          routerCtl.set(Page.Login).runNow()
-        }
-      }
+      gotoPage(Page.Login)
     }
     response
   }

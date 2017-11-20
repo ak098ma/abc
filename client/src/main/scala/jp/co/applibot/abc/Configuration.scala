@@ -14,10 +14,13 @@ object Configuration {
   val routerConfig: RouterConfig[Page] = RouterConfigDsl[Page].buildConfig { dsl =>
     import dsl._
 
-    (emptyRule
-      | staticRoute(root, Chat) ~> renderR(Chat(_))
+    (removeTrailingSlashes
+      | staticRoute(root, Home) ~> renderR(Home(_))
       | staticRoute(root / "sign-up", SignUp) ~> renderR(SignUp(_))
       | staticRoute(root / "login", Login) ~> renderR(Login(_))
-      ).notFound(redirectToPage(Chat)(Redirect.Replace))
+      | staticRoute(root / "chat", Chat) ~> renderR(Login(_))
+      | staticRoute(root / "not-found", NotFound) ~> renderR(NotFound(_))
+      ).notFound(redirectToPage(NotFound)(Redirect.Replace))
+       .logToConsole
   }
 }

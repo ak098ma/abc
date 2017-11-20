@@ -75,7 +75,7 @@ class SocketManager(userStore: UserStore, chatRoomStore: ChatRoomStore, messageS
 
     case Subscribe(Room(chatRoomId), actorRef, userPublic) =>
       val socketUsers = rooms.getOrElse(chatRoomId, Seq.empty)
-      rooms = rooms.updated(chatRoomId, SocketUser(actorRef, userPublic) +: socketUsers.filterNot(_.userPublic == userPublic.id))
+      rooms = rooms.updated(chatRoomId, SocketUser(actorRef, userPublic) +: socketUsers.filterNot(_.userPublic.id == userPublic.id))
       messageStore.get(chatRoomId, 0, 7).map(_.map { message =>
         ReceivedMessage(chatRoomId = chatRoomId, messageId = message.id, message = message.message, timestamp = message.timestamp)
       }).foreach(messages => actorRef ! ServerToClientEvent(receivedMessagesOption = Some(messages)))

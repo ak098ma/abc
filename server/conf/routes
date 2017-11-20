@@ -6,6 +6,8 @@
 GET         /                           jp.co.applibot.abc.controllers.Application.index
 GET         /sign-up                    jp.co.applibot.abc.controllers.Application.index
 GET         /login                      jp.co.applibot.abc.controllers.Application.index
+GET         /chat                       jp.co.applibot.abc.controllers.Application.index
+GET         /not-found                  jp.co.applibot.abc.controllers.Application.index
 
 # Prefix must match `play.assets.urlPrefix`
 GET         /assets/*file               controllers.Assets.at(file)
