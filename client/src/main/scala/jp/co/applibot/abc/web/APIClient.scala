@@ -1,7 +1,5 @@
 package jp.co.applibot.abc.web
 
-import japgolly.scalajs.react.extra.router.BaseUrl
-import jp.co.applibot.abc.Configuration
 import jp.co.applibot.abc.shared.models._
 import org.scalajs.dom.experimental.Fetch.fetch
 import org.scalajs.dom.experimental.HttpMethod._
@@ -11,12 +9,8 @@ import play.api.libs.json.Json
 import scala.concurrent.Future
 
 object APIClient {
-  private val baseUrl = Configuration.baseUrl
-
-  private def restV1(resolve: BaseUrl => BaseUrl): String = resolve(baseUrl / "rest" / "v1").value
-
   def signUp(user: User): Future[Response] = {
-    val path = restV1(_ / "sign-up")
+    val path = "/rest/v1/sign-up"
     val headers = new Headers()
     headers.append("Content-Type", "application/json")
     val request = RequestInit(
@@ -28,7 +22,7 @@ object APIClient {
   }
 
   def login(userCredential: UserCredential): Future[Response] = {
-    val path = restV1(_ / "login")
+    val path = "/rest/v1/login"
     val headers = new Headers()
     headers.append("Content-Type", "application/json")
     val request = RequestInit(

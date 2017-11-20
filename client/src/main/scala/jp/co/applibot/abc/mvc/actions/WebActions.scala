@@ -14,21 +14,6 @@ import scala.scalajs.js
 import scala.util.{Failure, Success}
 
 object WebActions {
-  private def handleUnauthorized(response: Response): Response = {
-    if (response.status == 401) {
-      gotoPage(Page.Login)
-    }
-    response
-  }
-
-  private def gotoPage(page: Page): Unit = {
-    Store.getState.router.foreach { routerCtl =>
-      if (window.location.pathname != routerCtl.pathFor(page).value) {
-        routerCtl.set(page).runNow()
-      }
-    }
-  }
-
   implicit class ResponseUtil(response: Response) {
     def getJson: Future[JsValue] = response.json().toFuture.map(any => Json.parse(scala.scalajs.js.JSON.stringify(any)))
 
@@ -47,7 +32,7 @@ object WebActions {
                 throw parseError
               case Success(text) =>
                 TokenManager.update(Json.fromJson[JsonWebToken](Json.parse(text)).get.token)
-                nextPageOption.foreach(gotoPage)
+                nextPageOption.foreach(RouterActions.gotoPage)
             }
           case _ =>
         }
@@ -56,7 +41,7 @@ object WebActions {
 
   def logout(nextPageOption: Option[Page] = Some(Page.Login)): Unit = {
     TokenManager.delete()
-    nextPageOption.foreach(gotoPage)
+    nextPageOption.foreach(RouterActions.gotoPage)
   }
 
   def signUp(user: User, nextPageOption: Option[Page] = Some(Page.Login)): Unit = {
@@ -66,7 +51,7 @@ object WebActions {
       case Success(response) =>
         response.status match {
           case 200 =>
-            nextPageOption.foreach(gotoPage)
+            nextPageOption.foreach(RouterActions.gotoPage)
           case 400 =>
           case _ =>
         }
@@ -146,7 +131,7 @@ object WebActions {
         }
       })
       socket.addEventListener("error", { _: ErrorEvent =>
-        gotoPage(Page.Login)
+        RouterActions.gotoPage(Page.Login)
       })
       socket.addEventListener("close", { _: CloseEvent =>
         Store.updateChatState(_.copy(webSocketOption = None))

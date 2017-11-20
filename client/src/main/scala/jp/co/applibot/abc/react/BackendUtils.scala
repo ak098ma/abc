@@ -9,6 +9,7 @@ trait BackendUtils[P, S] {
 
   final protected val update: js.Function1[S, Unit] = (state) => {
     bs.setState(state).runNow()
+    println(org.scalajs.dom.window.location)
   }
 
   def callbackWithPS(f: (P, S) => Unit): Callback = bs.props.flatMap(p => bs.state.map(s => f(p, s)))
