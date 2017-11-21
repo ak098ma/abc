@@ -1,17 +1,15 @@
 package jp.co.applibot.abc.mvc.actions
 
-import jp.co.applibot.abc.Store
-
 object SignUpActions {
   def setUserId(id: String): Unit = {
-    Store.updateSignUpState(_.copy(id = id))
+//    Store.updateSignUpState(_.copy(id = id))
   }
 
   def setNickname(nickname: String): Unit = {
-    Store.updateSignUpState(_.copy(nickname = nickname))
+//    Store.updateSignUpState(_.copy(nickname = nickname))
   }
 
   def setPassword(password: String): Unit = {
-    Store.updateSignUpState(_.copy(password = password))
+//    Store.updateSignUpState(_.copy(password = password))
   }
 }

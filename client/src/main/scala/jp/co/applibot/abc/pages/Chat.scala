@@ -3,25 +3,22 @@ package jp.co.applibot.abc.pages
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.component.Scala.Unmounted
 import japgolly.scalajs.react.vdom.html_<^._
-import jp.co.applibot.abc.models.State
+import jp.co.applibot.abc.TokenManager
+import jp.co.applibot.abc.models.Props
 import jp.co.applibot.abc.mvc.actions.{ChatActions, WebActions}
 import jp.co.applibot.abc.react.BackendUtils
 import jp.co.applibot.abc.shared.models._
-import jp.co.applibot.abc.{Store, TokenManager}
-import jp.co.applibot.react.Router.Router
 
 import scala.scalajs.js.Date
 
 object Chat {
-  type Props = Router
-
-  class Backend(override val bs: BackendScope[Props, State]) extends BackendUtils[Props, State] {
-    def render(state: State) = {
+  class Backend(override val bs: BackendScope[Props, Unit]) extends BackendUtils[Props, Unit] {
+    def render(props: Props) = {
       <.div(
         <.header(
-          state.chat.userPublicOption.map { userPublic =>
-            <.label(s"ID: ${userPublic.id}, ニックネーム: ${userPublic.nickname}")
-          }.getOrElse(EmptyVdom),
+//          state.chat.userPublicOption.map { userPublic =>
+//            <.label(s"ID: ${userPublic.id}, ニックネーム: ${userPublic.nickname}")
+//          }.getOrElse(EmptyVdom),
           <.button(
             "ログアウト",
             ^.onClick --> handleLogout,
@@ -29,23 +26,23 @@ object Chat {
         ),
         <.div(
           <.div(
-            renderCreateChatRoom(state.chat.titleOfNewChatRoom, state.chat.isCreateNewChatRoomDialogOpen),
+//            renderCreateChatRoom(state.chat.titleOfNewChatRoom, state.chat.isCreateNewChatRoomDialogOpen),
             <.div(
               <.div("参加しているチャットルーム"),
-              renderJoinedChatRooms(state.chat.joinedChatRoomsOption)
+//              renderJoinedChatRooms(state.chat.joinedChatRoomsOption)
             ),
             <.div(
               <.div("参加出来るチャットルーム"),
-              renderAvailableChatRooms(state.chat.joinedChatRoomsOption, state.chat.availableChatRoomsOption)
+//              renderAvailableChatRooms(state.chat.joinedChatRoomsOption, state.chat.availableChatRoomsOption)
             )
           ),
           <.div(
-            state.chat.selectedChatRoomOption match {
-              case None =>
-                <.div("チャットルームにJoinしてください")
-              case Some(chatRoom) =>
-                renderMessages(state.chat.messages.get(chatRoom.id), state.chat.editingMessage)
-            }
+//            state.chat.selectedChatRoomOption match {
+//              case None =>
+//                <.div("チャットルームにJoinしてください")
+//              case Some(chatRoom) =>
+//                renderMessages(state.chat.messages.get(chatRoom.id), state.chat.editingMessage)
+//            }
           ),
         ),
       )
@@ -165,7 +162,6 @@ object Chat {
     }
 
     def componentWillMount: Callback = bs.props.map { props =>
-      Store.subscribe(update)
       TokenManager.getToken match {
         case None =>
           WebActions.logout()
@@ -175,7 +171,6 @@ object Chat {
     }
 
     def componentWillUnmount: Callback = Callback {
-      Store.unsubscribe(update)
       WebActions.deleteWebSocket()
     }
 
@@ -188,7 +183,7 @@ object Chat {
     }
 
     def handleCreateChatRoom: Callback = bs.state.map { state =>
-      WebActions.createChatRoom(NewChatRoom(title = state.chat.titleOfNewChatRoom, users = Seq(), isPrivate = false))
+//      WebActions.createChatRoom(NewChatRoom(title = state.chat.titleOfNewChatRoom, users = Seq(), isPrivate = false))
       ChatActions.closeCreateChatRoomDialog()
     }
 
@@ -216,19 +211,19 @@ object Chat {
     }
 
     def handleSendMessage: Callback = Callback {
-      Store.getState.chat.selectedChatRoomOption.foreach { chatRoom =>
-        WebActions.sendMessage(chatRoom, Store.getState.chat.editingMessage)
-      }
+//      Store.getState.chat.selectedChatRoomOption.foreach { chatRoom =>
+//        WebActions.sendMessage(chatRoom, Store.getState.chat.editingMessage)
+//      }
     }
   }
 
   private val chat = ScalaComponent.builder[Props]("Chat")
-    .initialState(Store.getState)
+    .stateless
     .backend(new Backend(_))
     .renderBackend
     .componentWillMount(_.backend.componentWillMount)
     .componentWillUnmount(_.backend.componentWillUnmount)
     .build
 
-  def apply(props: Props): Unmounted[Props, State, Backend] = chat(props)
+  def apply(props: Props): Unmounted[Props, Unit, Backend] = chat(props)
 }

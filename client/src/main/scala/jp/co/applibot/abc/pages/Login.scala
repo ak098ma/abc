@@ -3,23 +3,19 @@ package jp.co.applibot.abc.pages
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.component.Scala.Unmounted
 import japgolly.scalajs.react.vdom.html_<^._
-import jp.co.applibot.abc.Store
-import jp.co.applibot.abc.models.State
+import jp.co.applibot.abc.models.Props
 import jp.co.applibot.abc.mvc.actions.LoginActions
 import jp.co.applibot.abc.react.BackendUtils
-import jp.co.applibot.react.Router.Router
 
 object Login {
-  type Props = Router
-
-  class Backend(override val bs: BackendScope[Props, State]) extends BackendUtils[Props, State] {
-    def render(state: State) = {
+  class Backend(override val bs: BackendScope[Props, Unit]) extends BackendUtils[Props, Unit] {
+    def render(props: Props) = {
       <.div(
         <.div(
           <.label("UserID"),
           <.input(
             ^.placeholder := "Enter id...",
-            ^.value := state.login.id,
+            ^.value := "TODO: ",
             ^.onChange ==> handleChangeUserID
           )
         ),
@@ -27,7 +23,7 @@ object Login {
           <.label("Password"),
           <.input(
             ^.placeholder := "Enter password...",
-            ^.value := state.login.password,
+            ^.value := "TODO: ",
             ^.`type` := "password",
             ^.onChange ==> handleChangePassword
           )
@@ -48,11 +44,11 @@ object Login {
     }
 
     def componentWillMount: Callback = bs.props.map { props =>
-      Store.subscribe(update)
+
     }
 
     def componentWillUnmount = Callback {
-      Store.unsubscribe(update)
+
     }
 
     def handleChangeUserID(event: ReactEventFromInput): Callback = Callback {
@@ -73,12 +69,12 @@ object Login {
   }
 
   private def login = ScalaComponent.builder[Props]("Login")
-    .initialState(Store.getState)
+    .stateless
     .backend(new Backend(_))
     .renderBackend
     .componentWillMount(_.backend.componentWillMount)
     .componentWillUnmount(_.backend.componentWillUnmount)
     .build
 
-  def apply(props: Props): Unmounted[Props, State, Backend] = login(props)
+  def apply(props: Props): Unmounted[Props, Unit, Backend] = login(props)
 }

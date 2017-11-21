@@ -57,35 +57,37 @@ object WebActions {
   }
 
   def createChatRoom(newChatRoom: NewChatRoom): Unit = {
-    Store.getState.chat.webSocketOption.foreach { socket =>
-      socket.send(ClientToServerEvent(createRoomOption = Some(newChatRoom)).stringify)
-    }
+//    Store.getState.chat.webSocketOption.foreach { socket =>
+//      socket.send(ClientToServerEvent(createRoomOption = Some(newChatRoom)).stringify)
+//    }
   }
 
   def joinChatRoom(chatRoom: ChatRoom): Unit = {
-    Store.getState.chat.webSocketOption.foreach { socket =>
-      socket.send(ClientToServerEvent(joinRoomOption = Some(chatRoom.id)).stringify)
-    }
+//    Store.getState.chat.webSocketOption.foreach { socket =>
+//      socket.send(ClientToServerEvent(joinRoomOption = Some(chatRoom.id)).stringify)
+//    }
   }
 
   def subscribeChatRoom(chatRoom: ChatRoom): Unit = {
-    Store.getState.chat.webSocketOption.foreach { socket =>
-      socket.send(ClientToServerEvent(subscribeRoomOption = Some(chatRoom)).stringify)
-    }
+//    Store.getState.chat.webSocketOption.foreach { socket =>
+//      socket.send(ClientToServerEvent(subscribeRoomOption = Some(chatRoom)).stringify)
+//    }
   }
 
   def sendMessage(chatRoom: ChatRoom, message: String): Unit = {
-    Store.getState.chat.webSocketOption.foreach { socket =>
-      socket.send(ClientToServerEvent(newMessageOption = Some(NewMessage(chatRoomId = chatRoom.id, message = message))).stringify)
-    }
+//    Store.getState.chat.webSocketOption.foreach { socket =>
+//      socket.send(ClientToServerEvent(newMessageOption = Some(NewMessage(chatRoomId = chatRoom.id, message = message))).stringify)
+//    }
   }
 
-  private def closeWebSocket(): Unit = Store.getState.chat.webSocketOption.foreach(_.close(code = 1000, reason = "unload"))
+  private def closeWebSocket(): Unit = {
+//    Store.getState.chat.webSocketOption.foreach(_.close(code = 1000, reason = "unload"))
+  }
 
   val unload: js.Function1[Event, Unit] = (_) => closeWebSocket()
 
   def createWebSocket(token: String): Unit = {
-    if (Store.getState.chat.webSocketOption.isEmpty) {
+    if (false) {
       val socket = new WebSocket(s"ws://${window.location.hostname}:${window.location.port}/chat/socket?token=$token")
       socket.addEventListener("open", { _: Event =>
         println("connected.")
@@ -94,47 +96,47 @@ object WebActions {
         window.console.log(event)
         val serverToClientEvent = Json.fromJson[ServerToClientEvent](Json.parse(event.data.toString)).get
         serverToClientEvent.joinedRoomsOption.foreach { chatRooms =>
-          Store.updateChatState(_.copy(joinedChatRoomsOption = Some(chatRooms)))
+//          Store.updateChatState(_.copy(joinedChatRoomsOption = Some(chatRooms)))
         }
         serverToClientEvent.newChatRoomOption.foreach { chatRoom =>
-          Store.updateChatState { state =>
-            state.copy(
-              joinedChatRoomsOption = state.joinedChatRoomsOption.map(_.add(chatRoom)),
-              availableChatRoomsOption = state.availableChatRoomsOption.map(_.remove(chatRoom))
-            )
-          }
+//          Store.updateChatState { state =>
+//            state.copy(
+//              joinedChatRoomsOption = state.joinedChatRoomsOption.map(_.add(chatRoom)),
+//              availableChatRoomsOption = state.availableChatRoomsOption.map(_.remove(chatRoom))
+//            )
+//          }
           subscribeChatRoom(chatRoom)
         }
         serverToClientEvent.availableRoomsOption.foreach { chatRooms =>
-          Store.updateChatState(_.copy(availableChatRoomsOption = Some(chatRooms)))
+//          Store.updateChatState(_.copy(availableChatRoomsOption = Some(chatRooms)))
         }
         serverToClientEvent.userPublicOption.foreach { userPublic =>
-          Store.updateChatState(_.copy(userPublicOption = Some(userPublic)))
+//          Store.updateChatState(_.copy(userPublicOption = Some(userPublic)))
         }
         serverToClientEvent.receivedMessagesOption.foreach { receivedMessages =>
           receivedMessages.foreach{ receivedMessage =>
-            Store.updateChatState{ state =>
-              val messages = state.messages.getOrElse(receivedMessage.chatRoomId, Seq.empty)
-              val received = receivedMessages.map(msg => Message(id = msg.messageId, message = msg.message, timestamp = msg.timestamp))
-              state.copy(messages = state.messages.updated(receivedMessage.chatRoomId, (received ++ messages).distinct))
-            }
+//            Store.updateChatState{ state =>
+//              val messages = state.messages.getOrElse(receivedMessage.chatRoomId, Seq.empty)
+//              val received = receivedMessages.map(msg => Message(id = msg.messageId, message = msg.message, timestamp = msg.timestamp))
+//              state.copy(messages = state.messages.updated(receivedMessage.chatRoomId, (received ++ messages).distinct))
+//            }
           }
         }
         serverToClientEvent.receivedMessageOption.foreach { receivedMessage =>
-          Store.updateChatState{ state =>
-            val messages = state.messages.getOrElse(receivedMessage.chatRoomId, Seq.empty)
-            val message = Message(id = receivedMessage.messageId, message = receivedMessage.message, timestamp = receivedMessage.timestamp)
-            state.copy(messages = state.messages.updated(receivedMessage.chatRoomId, (message +: messages).distinct))
-          }
+//          Store.updateChatState{ state =>
+//            val messages = state.messages.getOrElse(receivedMessage.chatRoomId, Seq.empty)
+//            val message = Message(id = receivedMessage.messageId, message = receivedMessage.message, timestamp = receivedMessage.timestamp)
+//            state.copy(messages = state.messages.updated(receivedMessage.chatRoomId, (message +: messages).distinct))
+//          }
         }
       })
       socket.addEventListener("error", { _: ErrorEvent =>
         ???
       })
       socket.addEventListener("close", { _: CloseEvent =>
-        Store.updateChatState(_.copy(webSocketOption = None))
+//        Store.updateChatState(_.copy(webSocketOption = None))
       })
-      Store.updateChatState(_.copy(webSocketOption = Some(socket)))
+//      Store.updateChatState(_.copy(webSocketOption = Some(socket)))
       window.addEventListener("unload", unload)
     }
   }

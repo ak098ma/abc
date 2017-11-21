@@ -1,7 +1,7 @@
 package jp.co.applibot.abc
 
 import japgolly.scalajs.react.vdom.html_<^._
-import jp.co.applibot.abc.models.{ChatState, LoginState, SignUpState, State}
+import jp.co.applibot.abc.models._
 import jp.co.applibot.abc.pages._
 import jp.co.applibot.react.Router
 import org.scalajs.dom
@@ -25,23 +25,27 @@ object Main {
       isCreateNewChatRoomDialogOpen = false,
       titleOfNewChatRoom = "",
       selectedChatRoomOption = None,
-      webSocketOption = None,
       messages = Map.empty,
       editingMessage = "",
     ),
   )
 
   def main(args: Array[String]): Unit = {
-    <.div(
+    Store{ (state, actions) =>
       Router { router =>
+        val props = Props(
+          state = state,
+          actions = actions,
+          router = router,
+        )
         router.pathname match {
-          case "/" => Home(router)
-          case "/sign-up" => SignUp(router)
-          case "/login" => Login(router)
-          case "/chat" => Chat(router)
-          case _ => NotFound(router)
+          case "/" => Home(props)
+          case "/sign-up" => SignUp(props)
+          case "/login" => Login(props)
+          case "/chat" => Chat(props)
+          case _ => NotFound(props)
         }
       }
-    ).renderIntoDOM(reactRootElement)
+    }.renderIntoDOM(reactRootElement)
   }
 }
