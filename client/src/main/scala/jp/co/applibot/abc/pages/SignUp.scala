@@ -4,9 +4,11 @@ import japgolly.scalajs.react._
 import japgolly.scalajs.react.component.Scala.Unmounted
 import japgolly.scalajs.react.vdom.html_<^._
 import jp.co.applibot.abc.actions.SignUpActions
+import jp.co.applibot.abc.components.FormItem
 import jp.co.applibot.abc.models.Props
 import jp.co.applibot.abc.react.BackendUtils
 import jp.co.applibot.abc.shared.styles
+
 import scalacss.ScalaCssReact._
 
 object SignUp {
@@ -17,9 +19,9 @@ object SignUp {
         <.div(
           <.div(
             styles.SignUp.form,
-            renderFormItem("ユーザーID", props.state.signUp.id, "user id", (_) => Callback.empty),
-            renderFormItem("ニックネーム", props.state.signUp.nickname, "nickname", (_) => Callback.empty),
-            renderFormItem("パスワード", props.state.signUp.password, "password", (_) => Callback.empty, true),
+            FormItem(FormItem.Props("ユーザーID", props.state.signUp.id, "user id", (_) => Callback.empty)),
+            FormItem(FormItem.Props("ニックネーム", props.state.signUp.nickname, "nickname", (_) => Callback.empty)),
+              FormItem(FormItem.Props("パスワード", props.state.signUp.password, "password", (_) => Callback.empty, true)),
             <.div(
               styles.SignUp.signUpButtonContainer,
               <.button(
@@ -35,29 +37,6 @@ object SignUp {
               "すでにアカウントをお持ちの方はこちら",
               ^.onClick --> props.router.push("/login"),
             )
-          )
-        )
-      )
-    }
-
-    def renderFormItem(label: String, value: String, placeholder: String, onChange: String => Callback, isCredential: Boolean = false) = {
-      <.div(
-        styles.SignUp.formItem,
-        <.div(
-          styles.SignUp.label,
-          label,
-        ),
-        <.div(
-          styles.SignUp.inputContainer,
-          <.input(
-            styles.SignUp.input,
-            ^.`type` := (if (isCredential) "password" else ""),
-            ^.placeholder := placeholder,
-            ^.value := value,
-            ^.onChange ==> ((event: ReactEventFromInput) => {
-              val value = event.target.value
-              onChange(value)
-            })
           )
         )
       )

@@ -28,27 +28,6 @@ object SignUp extends StyleSheet.Inline {
     padding(8 px),
   )
 
-  val formItem = style(
-    display.flex,
-    justifyContent.center,
-  )
-
-  val label = style(
-    textAlign.center,
-    width(128 px),
-    padding(8 px),
-  )
-
-  val inputContainer = style(
-    width(64 %%),
-    padding(8 px),
-  )
-
-  val input = style(
-    width(100 %%),
-    padding(4 px),
-  )
-
   val signUpButtonContainer = style(
     display.flex,
     justifyContent.center,
