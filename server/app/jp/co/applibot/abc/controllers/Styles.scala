@@ -15,6 +15,7 @@ class Styles @Inject()(cc: ControllerComponents) extends AbstractController(cc) 
 
   def components = Action {
     Ok(List(
+      Layout.render,
       Home.render,
     ).mkString("\n")).as(CSS)
   }

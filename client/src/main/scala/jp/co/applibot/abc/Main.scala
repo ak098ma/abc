@@ -1,6 +1,7 @@
 package jp.co.applibot.abc
 
 import japgolly.scalajs.react.vdom.html_<^._
+import jp.co.applibot.abc.components.Layout
 import jp.co.applibot.abc.models._
 import jp.co.applibot.abc.pages._
 import jp.co.applibot.react.Router
@@ -40,13 +41,15 @@ object Main {
           actions = actions,
           router = router,
         )
-        router.pathname match {
-          case "/" => Home(props)
-          case "/sign-up" => SignUp(props)
-          case "/login" => Login(props)
-          case "/chat" => Chat(props)
-          case _ => NotFound(props)
-        }
+        Layout(Layout.Props(
+          content = router.pathname match {
+            case "/" => Home(props)
+            case "/sign-up" => SignUp(props)
+            case "/login" => Login(props)
+            case "/chat" => Chat(props)
+            case _ => NotFound(props)
+          },
+        ))
       }
     }.renderIntoDOM(reactRootElement)
   }

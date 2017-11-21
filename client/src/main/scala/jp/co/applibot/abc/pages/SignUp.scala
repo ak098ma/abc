@@ -7,6 +7,8 @@ import jp.co.applibot.abc.actions.SignUpActions
 import jp.co.applibot.abc.models.Props
 import jp.co.applibot.abc.react.BackendUtils
 
+import scalacss.ScalaCssReact._
+
 object SignUp {
   class Backend(override val bs: BackendScope[Props, Unit]) extends BackendUtils[Props, Unit] {
     def render(props: Props) = {

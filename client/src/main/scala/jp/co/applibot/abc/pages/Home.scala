@@ -3,38 +3,29 @@ package jp.co.applibot.abc.pages
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
 import jp.co.applibot.abc.models.Props
-import scalacss.ScalaCssReact._
 import jp.co.applibot.abc.shared.styles
+
+import scalacss.ScalaCssReact._
 
 object Home {
   val home = ScalaComponent.builder[Props]("Home")
     .stateless
     .render_P((props) =>
       <.div(
-        styles.Home.container,
-        <.header(
-          styles.Home.header,
-          <.img(styles.Home.logo, ^.src := "/assets/images/favicon.png"),
+        styles.Home.alternative,
+        <.div(
+          styles.Home.panel,
+          <.button(
+            styles.Home.signUp,
+            ^.onClick --> props.router.push("/sign-up"),
+          ),
         ),
         <.div(
-          styles.Home.content,
-          <.div(
-            styles.Home.alternative,
-            <.div(
-              styles.Home.panel,
-              <.button(
-                styles.Home.signUp,
-                ^.onClick --> props.router.push("/sign-up"),
-              ),
-            ),
-            <.div(
-              styles.Home.panel,
-              <.button(
-                styles.Home.login,
-                ^.onClick --> props.router.push("/login"),
-              )
-            ),
-          ),
+          styles.Home.panel,
+          <.button(
+            styles.Home.login,
+            ^.onClick --> props.router.push("/login"),
+          )
         ),
       )
     )
