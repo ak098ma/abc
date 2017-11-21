@@ -4,25 +4,36 @@ import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
 import jp.co.applibot.abc.models.Props
 import scalacss.ScalaCssReact._
+import jp.co.applibot.abc.shared.styles
 
 object Home {
   val home = ScalaComponent.builder[Props]("Home")
     .stateless
     .render_P((props) =>
       <.div(
-        <.h1("Welcome to Applibot Chat"),
+        styles.Home.container,
+        <.header(
+          styles.Home.header,
+          <.img(styles.Home.logo, ^.src := "/assets/images/favicon.png"),
+        ),
         <.div(
+          styles.Home.content,
           <.div(
-            <.button(
-              "新規登録",
-              ^.onClick --> Callback(props.actions),  // TODO:
+            styles.Home.alternative,
+            <.div(
+              styles.Home.panel,
+              <.button(
+                styles.Home.signUp,
+                ^.onClick --> Callback(props.actions), // TODO:
+              ),
             ),
-          ),
-          <.div(
-            <.button(
-              "ログイン",
-              ^.onClick --> Callback(props.actions),  // TODO:
-            )
+            <.div(
+              styles.Home.panel,
+              <.button(
+                styles.Home.login,
+                ^.onClick --> Callback(props.actions), // TODO:
+              )
+            ),
           ),
         ),
       )

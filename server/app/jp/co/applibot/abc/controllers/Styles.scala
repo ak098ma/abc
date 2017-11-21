@@ -2,8 +2,8 @@ package jp.co.applibot.abc.controllers
 
 import javax.inject._
 
+import jp.co.applibot.abc.shared.styles._
 import play.api.mvc._
-import views.styles.{Home, Index}
 
 import scalacss.DevDefaults._
 
