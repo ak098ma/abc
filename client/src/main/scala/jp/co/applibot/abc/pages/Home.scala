@@ -24,14 +24,14 @@ object Home {
               styles.Home.panel,
               <.button(
                 styles.Home.signUp,
-                ^.onClick --> props.router.push("/sign-up"), // TODO:
+                ^.onClick --> props.router.push("/sign-up"),
               ),
             ),
             <.div(
               styles.Home.panel,
               <.button(
                 styles.Home.login,
-                ^.onClick --> props.router.push("/login"), // TODO:
+                ^.onClick --> props.router.push("/login"),
               )
             ),
           ),
