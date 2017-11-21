@@ -1,7 +1,6 @@
 package jp.co.applibot.abc.models
 
 import jp.co.applibot.abc.shared.models.{ChatRoom, ChatRooms, Message, UserPublic}
-import org.scalajs.dom.raw.WebSocket
 
 case class ChatState(userPublicOption: Option[UserPublic],
                      joinedChatRoomsOption: Option[ChatRooms],
@@ -9,6 +8,5 @@ case class ChatState(userPublicOption: Option[UserPublic],
                      isCreateNewChatRoomDialogOpen: Boolean,
                      titleOfNewChatRoom: String,
                      selectedChatRoomOption: Option[ChatRoom],
-                     webSocketOption: Option[WebSocket],
                      messages: Map[String, Seq[Message]],
                      editingMessage: String)
