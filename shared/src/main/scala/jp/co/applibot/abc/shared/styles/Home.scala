@@ -10,7 +10,7 @@ object Home extends StyleSheet.Inline {
   private val iconSize = 80
 
   val alternative = style(
-    margin(8 px, auto),
+    margin(8 px, 0 px),
     display.flex,
     flexWrap.wrap,
     justifyContent.center,
@@ -54,6 +54,6 @@ object Home extends StyleSheet.Inline {
 
   val login = style(
     icon,
-    backgroundImage := "url('/assets/images/icons/input.png')",
+    backgroundImage := "url('/assets/images/icons/exit_to_app.png')",
   )
 }

@@ -6,48 +6,58 @@ import japgolly.scalajs.react.vdom.html_<^._
 import jp.co.applibot.abc.actions.SignUpActions
 import jp.co.applibot.abc.models.Props
 import jp.co.applibot.abc.react.BackendUtils
-
+import jp.co.applibot.abc.shared.styles
 import scalacss.ScalaCssReact._
 
 object SignUp {
   class Backend(override val bs: BackendScope[Props, Unit]) extends BackendUtils[Props, Unit] {
     def render(props: Props) = {
       <.div(
+        styles.SignUp.container,
         <.div(
-          <.label("UserID"),
+          <.div(
+            styles.SignUp.form,
+            renderFormItem("ユーザーID", props.state.signUp.id, "user id", (_) => Callback.empty),
+            renderFormItem("ニックネーム", props.state.signUp.nickname, "nickname", (_) => Callback.empty),
+            renderFormItem("パスワード", props.state.signUp.password, "password", (_) => Callback.empty, true),
+            <.div(
+              styles.SignUp.signUpButtonContainer,
+              <.button(
+                styles.SignUp.signUpButton,
+                ^.onClick --> handleClickSignUp
+              )
+            ),
+          ),
+          <.div(
+            styles.SignUp.linkContainer,
+            <.a(
+              styles.SignUp.gotoLoginButton,
+              "すでにアカウントをお持ちの方はこちら",
+              ^.onClick --> props.router.push("/login"),
+            )
+          )
+        )
+      )
+    }
+
+    def renderFormItem(label: String, value: String, placeholder: String, onChange: String => Callback, isCredential: Boolean = false) = {
+      <.div(
+        styles.SignUp.formItem,
+        <.div(
+          styles.SignUp.label,
+          label,
+        ),
+        <.div(
+          styles.SignUp.inputContainer,
           <.input(
-            ^.placeholder := "Enter id...",
-            ^.value := "TODO: ",
-            ^.onChange ==> handleChangeUserID
-          )
-        ),
-        <.div(
-          <.label("Nickname"),
-          <.input(
-            ^.placeholder := "Enter nickname...",
-            ^.value := "TODO: ",
-            ^.onChange ==> handleChangeNickname
-          )
-        ),
-        <.div(
-          <.label("Password"),
-          <.input(
-            ^.placeholder := "Enter password...",
-            ^.value := "TODO: ",
-            ^.`type` := "password",
-            ^.onChange ==> handleChangePassword
-          )
-        ),
-        <.div(
-          <.button(
-            "SignUp",
-            ^.onClick --> handleClickSignUp
-          )
-        ),
-        <.div(
-          <.button(
-            "already have an account?",
-            ^.onClick --> handleClickAlreadyHaveAnAccount
+            styles.SignUp.input,
+            ^.`type` := (if (isCredential) "password" else ""),
+            ^.placeholder := placeholder,
+            ^.value := value,
+            ^.onChange ==> ((event: ReactEventFromInput) => {
+              val value = event.target.value
+              onChange(value)
+            })
           )
         )
       )
