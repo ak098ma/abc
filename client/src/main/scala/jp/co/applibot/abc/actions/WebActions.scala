@@ -1,4 +1,4 @@
-package jp.co.applibot.abc.mvc.actions
+package jp.co.applibot.abc.actions
 
 import jp.co.applibot.abc.shared.models._
 import jp.co.applibot.abc.web.APIClient

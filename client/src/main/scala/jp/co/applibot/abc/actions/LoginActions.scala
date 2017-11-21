@@ -1,4 +1,4 @@
-package jp.co.applibot.abc.mvc.actions
+package jp.co.applibot.abc.actions
 
 object LoginActions {
   def setUserId(id: String): Unit = {

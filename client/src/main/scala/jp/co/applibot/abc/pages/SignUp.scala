@@ -3,8 +3,8 @@ package jp.co.applibot.abc.pages
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.component.Scala.Unmounted
 import japgolly.scalajs.react.vdom.html_<^._
+import jp.co.applibot.abc.actions.SignUpActions
 import jp.co.applibot.abc.models.Props
-import jp.co.applibot.abc.mvc.actions.SignUpActions
 import jp.co.applibot.abc.react.BackendUtils
 
 object SignUp {

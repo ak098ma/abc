@@ -4,8 +4,8 @@ import japgolly.scalajs.react._
 import japgolly.scalajs.react.component.Scala.Unmounted
 import japgolly.scalajs.react.vdom.html_<^._
 import jp.co.applibot.abc.TokenManager
+import jp.co.applibot.abc.actions.{ChatActions, WebActions}
 import jp.co.applibot.abc.models.Props
-import jp.co.applibot.abc.mvc.actions.{ChatActions, WebActions}
 import jp.co.applibot.abc.react.BackendUtils
 import jp.co.applibot.abc.shared.models._
 
