@@ -3,6 +3,7 @@ package jp.co.applibot.abc.pages
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
 import jp.co.applibot.abc.models.Props
+import scalacss.ScalaCssReact._
 
 object Home {
   val home = ScalaComponent.builder[Props]("Home")

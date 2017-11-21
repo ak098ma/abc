@@ -11,7 +11,7 @@ lazy val server = (project in file("server")).settings(commonSettings).settings(
     "com.h2database" % "h2" % "1.4.192"
   ),
   // Compile the project before generating Eclipse files, so that generated .scala or .class files for views and routes are present
-  EclipseKeys.preTasks := Seq(compile in Compile)
+  EclipseKeys.preTasks := Seq(compile in Compile),
 ).enablePlugins(PlayScala).
   dependsOn(sharedJvm)
 
@@ -21,6 +21,7 @@ lazy val client = (project in file("client")).settings(commonSettings).settings(
     "org.scala-js" %%% "scalajs-dom" % "0.9.3",
     "com.github.japgolly.scalajs-react" %%% "core" % "1.1.1",
     "com.github.japgolly.scalajs-react" %%% "extra" % "1.1.1",
+    "com.github.japgolly.scalacss" %%% "ext-react" % "0.5.3",
   ),
   jsDependencies ++= Seq(
     "org.webjars.bower" % "react" % "15.6.1"
@@ -36,14 +37,15 @@ lazy val client = (project in file("client")).settings(commonSettings).settings(
       / "react-dom-server.js"
       minified "react-dom-server.min.js"
       dependsOn "react-dom.js"
-      commonJSName "ReactDOMServer")
+      commonJSName "ReactDOMServer"),
 ).enablePlugins(ScalaJSPlugin, ScalaJSWeb).
   dependsOn(sharedJs)
 
 lazy val shared = (crossProject.crossType(CrossType.Pure) in file("shared")).settings(commonSettings).settings(
   libraryDependencies ++= Seq(
-    "com.typesafe.play" %%% "play-json" % "2.6.6"
-  )
+    "com.github.japgolly.scalacss" %%% "core" % "0.5.3",
+    "com.typesafe.play" %%% "play-json" % "2.6.6",
+  ),
 )
 lazy val sharedJvm = shared.jvm
 lazy val sharedJs = shared.js
@@ -51,7 +53,7 @@ lazy val sharedJs = shared.js
 lazy val commonSettings = Seq(
   scalaVersion := "2.12.4",
   organization := "jp.co.applibot",
-  javaOptions += "-Xmx4G"
+  javaOptions += "-Xmx4G",
 )
 
 // loads the server project at sbt startup

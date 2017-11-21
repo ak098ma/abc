@@ -6,6 +6,8 @@ import jp.co.applibot.abc.pages._
 import jp.co.applibot.react.Router
 import org.scalajs.dom
 
+import scalacss.DevDefaults._
+
 object Main {
   val reactRootElement: dom.Element = dom.document.getElementById("react-root")
 

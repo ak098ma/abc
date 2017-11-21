@@ -9,6 +9,10 @@ GET         /login                      jp.co.applibot.abc.controllers.Applicati
 GET         /chat                       jp.co.applibot.abc.controllers.Application.index
 GET         /not-found                  jp.co.applibot.abc.controllers.Application.index
 
+# Dynamic Styles
+GET         /styles/index.css           jp.co.applibot.abc.controllers.Styles.index
+GET         /styles/components.css      jp.co.applibot.abc.controllers.Styles.components
+
 # Prefix must match `play.assets.urlPrefix`
 GET         /assets/*file               controllers.Assets.at(file)
 GET         /versionedAssets/*file      controllers.Assets.versioned(path="/public", file: Asset)
