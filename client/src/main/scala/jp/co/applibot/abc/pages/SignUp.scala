@@ -12,6 +12,7 @@ import jp.co.applibot.abc.shared.styles
 import scalacss.ScalaCssReact._
 
 object SignUp {
+
   class Backend(override val bs: BackendScope[Props, Unit]) extends BackendUtils[Props, Unit] {
     def render(props: Props) = {
       <.div(
@@ -21,7 +22,7 @@ object SignUp {
             styles.SignUp.form,
             FormItem(FormItem.Props("ユーザーID", props.state.signUp.id, "user id", (_) => Callback.empty)),
             FormItem(FormItem.Props("ニックネーム", props.state.signUp.nickname, "nickname", (_) => Callback.empty)),
-              FormItem(FormItem.Props("パスワード", props.state.signUp.password, "password", (_) => Callback.empty, true)),
+            FormItem(FormItem.Props("パスワード", props.state.signUp.password, "password", (_) => Callback.empty, true)),
             <.div(
               styles.SignUp.signUpButtonContainer,
               <.button(
@@ -66,7 +67,7 @@ object SignUp {
     }
 
     def handleClickSignUp: Callback = callbackWithPS { (props, state) =>
-//      WebActions.signUp(User(id = state.signUp.id, nickname = state.signUp.nickname, password = state.signUp.password, joiningChatRooms = Seq.empty))
+      //      WebActions.signUp(User(id = state.signUp.id, nickname = state.signUp.nickname, password = state.signUp.password, joiningChatRooms = Seq.empty))
     }
 
     def handleClickAlreadyHaveAnAccount: Callback = Callback.empty
