@@ -24,11 +24,17 @@ object SignUp {
             FormItem(FormItem.Props("ニックネーム", props.state.signUp.nickname, "nickname", (_) => Callback.empty)),
             FormItem(FormItem.Props("パスワード", props.state.signUp.password, "password", (_) => Callback.empty, true)),
             <.div(
-              styles.SignUp.signUpButtonContainer,
-              <.button(
-                styles.SignUp.signUpButton,
-                ^.onClick --> handleClickSignUp
-              )
+              styles.SignUp.signUpButtonRow,
+              <.div(
+                styles.SignUp.signUpButtonContainer,
+                <.button(
+                  styles.SignUp.signUpButton,
+                  ^.onClick --> handleClickSignUp
+                ),
+                <.div(
+                  "新規登録"
+                ),
+              ),
             ),
           ),
           <.div(

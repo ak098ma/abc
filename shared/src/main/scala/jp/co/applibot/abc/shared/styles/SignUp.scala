@@ -28,33 +28,38 @@ object SignUp extends StyleSheet.Inline {
     padding(8 px),
   )
 
-  val signUpButtonContainer = style(
+  val signUpButtonRow = style(
     display.flex,
     justifyContent.center,
     width(100 %%),
     padding(8 px),
   )
 
-  val signUpButton = style(
+  val signUpButtonContainer = style(
+    textAlign.center,
     &.hover(
       opacity(1),
-      transform := "rotate(-377deg)",
+      transform := "scale(1.1, 1.1)",
     ),
     &.active(
       transitionDuration(0.seconds),
-      transform := "translate(2px,2px) rotate(-11deg)",
+      transform := "scale(1, 1)",
     ),
+    opacity(0.7),
+    cursor.pointer,
+    transitionDuration(0.3.seconds),
+    transform := "scale(1, 1)",
+  )
+
+  val signUpButton = style(
     backgroundSize := "contain",
     backgroundImage := "url(/assets/images/icons/send.png)",
     backgroundRepeat := "no-repeat",
-    opacity(0.7),
     cursor.pointer,
     borderStyle.none,
     outline.`0`,
     width(iconSize px),
     height(iconSize px),
-    transitionDuration(0.3.seconds),
-    transformOrigin := s"${iconSize / 2 - 8}px ${iconSize / 2 + 8}px",
     transform := "rotate(-11deg)",
   )
 

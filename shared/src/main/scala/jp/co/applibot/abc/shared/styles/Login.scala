@@ -28,34 +28,38 @@ object Login extends StyleSheet.Inline {
     padding(8 px),
   )
 
-  val loginButtonContainer = style(
+  val loginButtonRow = style(
     display.flex,
     justifyContent.center,
     width(100 %%),
     padding(8 px),
   )
 
-  val loginButton = style(
+  val loginButtonContainer = style(
+    textAlign.center,
     &.hover(
       opacity(1),
-      transform := "rotate(-377deg)",
+      transform := "scale(1.1, 1.1)",
     ),
     &.active(
       transitionDuration(0.seconds),
-      transform := "translate(2px,2px) rotate(-11deg)",
+      transform := "scale(1, 1)",
     ),
-    backgroundSize := "contain",
-    backgroundImage := "url(/assets/images/icons/send.png)",
-    backgroundRepeat := "no-repeat",
     opacity(0.7),
     cursor.pointer,
+    transitionDuration(0.3.seconds),
+    transform := "scale(1, 1)",
+  )
+
+  val loginButton = style(
+    backgroundSize := "contain",
+    backgroundImage := "url(/assets/images/icons/thumb_up.png)",
+    backgroundRepeat := "no-repeat",
     borderStyle.none,
     outline.`0`,
     width(iconSize px),
     height(iconSize px),
-    transitionDuration(0.3.seconds),
-    transformOrigin := s"${iconSize / 2 - 8}px ${iconSize / 2 + 8}px",
-    transform := "rotate(-11deg)",
+    cursor.pointer,
   )
 
   val linkContainer = style(

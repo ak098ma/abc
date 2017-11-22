@@ -20,7 +20,20 @@ object Login {
           <.div(
             styles.Login.form,
             FormItem(FormItem.Props("ユーザーID", props.state.login.id, "user_id", (_) => Callback.empty)),
-            FormItem(FormItem.Props("パスワード", props.state.login.password, "password", (_) => Callback.empty, true)),
+            FormItem(FormItem.Props("パスワード", props.state.login.password, "password", (_) => Callback.empty, isCredential = true)),
+            <.div(
+              styles.Login.loginButtonRow,
+              <.div(
+                styles.Login.loginButtonContainer,
+                <.button(
+                  styles.Login.loginButton,
+                  ^.onClick --> Callback.warn("not implemented yet.")
+                ),
+                <.div(
+                  "ログイン"
+                ),
+              )
+            ),
           ),
           <.div(
             styles.Login.linkContainer,
