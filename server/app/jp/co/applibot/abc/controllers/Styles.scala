@@ -15,12 +15,13 @@ class Styles @Inject()(cc: ControllerComponents) extends AbstractController(cc) 
 
   def components = Action {
     Ok(List(
-      styles.Layout.render,
-      styles.Home.render,
-      styles.SignUp.render,
-      styles.Login.render,
       styles.Chat.render,
+      styles.FormItem.render,
+      styles.Home.render,
+      styles.Layout.render,
+      styles.Login.render,
       styles.NotFound.render,
+      styles.SignUp.render,
     ).mkString("\n")).as(CSS)
   }
 }

@@ -4,41 +4,32 @@ import japgolly.scalajs.react._
 import japgolly.scalajs.react.component.Scala.Unmounted
 import japgolly.scalajs.react.vdom.html_<^._
 import jp.co.applibot.abc.actions.LoginActions
+import jp.co.applibot.abc.components.FormItem
 import jp.co.applibot.abc.models.Props
 import jp.co.applibot.abc.react.BackendUtils
+import jp.co.applibot.abc.shared.styles
+
+import scalacss.ScalaCssReact._
 
 object Login {
   class Backend(override val bs: BackendScope[Props, Unit]) extends BackendUtils[Props, Unit] {
     def render(props: Props) = {
       <.div(
+        styles.Login.container,
         <.div(
-          <.label("UserID"),
-          <.input(
-            ^.placeholder := "Enter id...",
-            ^.value := "TODO: ",
-            ^.onChange ==> handleChangeUserID
-          )
-        ),
-        <.div(
-          <.label("Password"),
-          <.input(
-            ^.placeholder := "Enter password...",
-            ^.value := "TODO: ",
-            ^.`type` := "password",
-            ^.onChange ==> handleChangePassword
-          )
-        ),
-        <.div(
-          <.button(
-            "Login",
-            ^.onClick --> handleClickLogin
-          )
-        ),
-        <.div(
-          <.button(
-            "new user?",
-            ^.onClick --> handleClickNewUser
-          )
+          <.div(
+            styles.Login.form,
+            FormItem(FormItem.Props("ユーザーID", props.state.login.id, "user_id", (_) => Callback.empty)),
+            FormItem(FormItem.Props("パスワード", props.state.login.password, "password", (_) => Callback.empty, true)),
+          ),
+          <.div(
+            styles.Login.linkContainer,
+            <.a(
+              styles.Login.gotoSignUpButton,
+              "はじめての方はこちら",
+              ^.onClick --> props.router.push("/sign-up"),
+            )
+          ),
         ),
       )
     }

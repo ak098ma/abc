@@ -1,5 +1,7 @@
 package jp.co.applibot.abc.shared.styles
 
+import jp.co.applibot.abc.shared.styles.Home.style
+
 import scalacss.DevDefaults._
 
 object Layout extends StyleSheet.Inline {
@@ -30,6 +32,8 @@ object Layout extends StyleSheet.Inline {
     maxWidth(64 px),
     maxHeight(64 px),
   )
+
+  val logoActive = style(cursor.pointer)
 
   val content = style(
     paddingTop(headerHeight px),

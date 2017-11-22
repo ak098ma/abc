@@ -49,6 +49,7 @@ object Main {
             case "/chat" => Chat(props)
             case _ => NotFound(props)
           },
+          router = router,
         ))
       }
     }.renderIntoDOM(reactRootElement)
