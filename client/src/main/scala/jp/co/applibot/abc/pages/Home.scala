@@ -8,27 +8,46 @@ import jp.co.applibot.abc.shared.styles
 import scalacss.ScalaCssReact._
 
 object Home {
-  val home = ScalaComponent.builder[Props]("Home")
-    .stateless
-    .render_P((props) =>
+
+  class Backend(bs: BackendScope[Props, Unit]) {
+
+    def render(props: Props) = {
       <.div(
         styles.Home.alternative,
         <.div(
           styles.Home.panel,
-          <.button(
-            styles.Home.signUp,
+          <.div(
+            styles.Home.link,
             ^.onClick --> props.router.push("/sign-up"),
+            <.button(
+              styles.Home.signUp,
+            ),
+            <.div(
+              "新規登録"
+            ),
           ),
         ),
         <.div(
           styles.Home.panel,
-          <.button(
-            styles.Home.login,
+          <.div(
+            styles.Home.link,
             ^.onClick --> props.router.push("/login"),
-          )
+            <.button(
+              styles.Home.login,
+            ),
+            <.div(
+              "ログイン"
+            ),
+          ),
         ),
       )
-    )
+    }
+  }
+
+  private val home = ScalaComponent.builder[Props]("Home")
+    .stateless
+    .backend(new Backend(_))
+    .renderBackend
     .build
 
   def apply(props: Props) = home(props)

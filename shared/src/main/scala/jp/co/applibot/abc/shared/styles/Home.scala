@@ -20,31 +20,37 @@ object Home extends StyleSheet.Inline {
   )
 
   val panel = style(
+    textAlign.center,
     margin(8 px, 16 px),
     width(panelSize px),
     height(panelSize px),
-    padding((panelSize - iconSize) / 2 px, (panelSize - iconSize) / 2 px),
+    padding((panelSize - iconSize - 24) / 2 px, (panelSize - iconSize) / 2 px),
     backgroundColor(Color("white")),
     borderRadius(8 px),
   )
 
-  private val icon = mixin(
-    &.hover(
-      opacity(1),
-    ),
+  val link = style(
     &.active(
       transitionDuration(0.seconds),
       transform := "translate(2px,2px)",
     ),
+    &.hover(
+      opacity(1),
+    ),
+    opacity(0.7),
+    width(iconSize + 8 px),
+    height(iconSize + 32 px),
+    cursor.pointer,
+    transitionDuration(0.3.seconds),
+  )
+
+  private val icon = mixin(
     width(iconSize px),
     height(iconSize px),
     backgroundRepeat := "no-repeat",
     backgroundSize := "contain",
-    opacity(0.7),
-    cursor.pointer,
     borderStyle.none,
     outline.`0`,
-    transitionDuration(0.3.seconds),
   )
 
   val signUp = style(
