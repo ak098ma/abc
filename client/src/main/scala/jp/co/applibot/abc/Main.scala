@@ -7,8 +7,6 @@ import jp.co.applibot.abc.pages._
 import jp.co.applibot.react.Router
 import org.scalajs.dom
 
-import scalacss.DevDefaults._
-
 object Main {
   val reactRootElement: dom.Element = dom.document.getElementById("react-root")
 
@@ -34,7 +32,7 @@ object Main {
   )
 
   def main(args: Array[String]): Unit = {
-    Store{ (state, actions) =>
+    Store { (state, actions) =>
       Router { router =>
         val props = Props(
           state = state,
