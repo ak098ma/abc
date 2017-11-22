@@ -28,7 +28,7 @@ object SignUp {
                 styles.SignUp.signUpButtonContainer,
                 <.button(
                   styles.SignUp.signUpButton,
-                  ^.onClick --> Callback.warn("not implemented yet."),
+                  ^.onClick --> props.webActions.signUp,
                 ),
                 <.div(
                   "新規登録"

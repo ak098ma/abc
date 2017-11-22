@@ -9,28 +9,30 @@ import play.api.libs.json.Json
 import scala.concurrent.Future
 
 object APIClient {
+  private def request(path: String, options: RequestInit): Future[Response] = fetch(path, options).toFuture
+
   def signUp(user: User): Future[Response] = {
     val path = "/rest/v1/sign-up"
     val headers = new Headers()
     headers.append("Content-Type", "application/json")
-    val request = RequestInit(
+    val options = RequestInit(
       method = POST,
       body = Json.toJson(user).toString(),
       headers = headers,
     )
-    fetch(path, request).toFuture
+    request(path, options)
   }
 
   def login(userCredential: UserCredential): Future[Response] = {
     val path = "/rest/v1/login"
     val headers = new Headers()
     headers.append("Content-Type", "application/json")
-    val request = RequestInit(
+    val options = RequestInit(
       method = POST,
       credentials = RequestCredentials.include,
       body = Json.toJson(userCredential).toString(),
       headers = headers,
     )
-    fetch(path, request).toFuture
+    request(path, options)
   }
 }

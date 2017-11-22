@@ -27,7 +27,7 @@ object Login {
                 styles.Login.loginButtonContainer,
                 <.button(
                   styles.Login.loginButton,
-                  ^.onClick --> Callback.warn("not implemented yet."),
+                  ^.onClick --> props.webActions.login,
                 ),
                 <.div(
                   "ログイン"
