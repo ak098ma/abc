@@ -41,16 +41,18 @@ object Main {
           actions = actions,
           router = router,
         )
-        Layout(Layout.Props(
-          content = router.pathname match {
-            case "/" => Home(props)
-            case "/sign-up" => SignUp(props)
-            case "/login" => Login(props)
-            case "/chat" => Chat(props)
-            case _ => NotFound(props)
-          },
+        val content = router.pathname match {
+          case "/" => Home(props)
+          case "/sign-up" => SignUp(props)
+          case "/login" => Login(props)
+          case "/chat" => Chat(props)
+          case _ => NotFound(props)
+        }
+        val layoutProps = Layout.Props(
+          content = content,
           router = router,
-        ))
+        )
+        Layout(layoutProps)
       }
     }.renderIntoDOM(reactRootElement)
   }

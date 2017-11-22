@@ -25,7 +25,7 @@ object Layout {
             ^.onClick --> Callback.when(!isHomePage)(props.router.push("/"))
           ),
         ),
-        <.section(
+        <.div(
           styles.Layout.content,
           props.content,
         )
