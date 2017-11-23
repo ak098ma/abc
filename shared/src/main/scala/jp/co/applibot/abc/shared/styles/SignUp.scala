@@ -55,6 +55,7 @@ object SignUp extends StyleSheet.Inline {
     backgroundSize := "contain",
     backgroundImage := "url(/assets/images/icons/send.png)",
     backgroundRepeat := "no-repeat",
+    backgroundColor.transparent,
     cursor.pointer,
     borderStyle.none,
     outline.`0`,

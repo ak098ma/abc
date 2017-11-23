@@ -49,6 +49,7 @@ object Home extends StyleSheet.Inline {
     height(iconSize px),
     backgroundRepeat := "no-repeat",
     backgroundSize := "contain",
+    backgroundColor.transparent,
     borderStyle.none,
     outline.`0`,
   )

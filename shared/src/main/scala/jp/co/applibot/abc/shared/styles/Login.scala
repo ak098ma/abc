@@ -55,6 +55,7 @@ object Login extends StyleSheet.Inline {
     backgroundSize := "contain",
     backgroundImage := "url(/assets/images/icons/thumb_up.png)",
     backgroundRepeat := "no-repeat",
+    backgroundColor.transparent,
     borderStyle.none,
     outline.`0`,
     width(iconSize px),
