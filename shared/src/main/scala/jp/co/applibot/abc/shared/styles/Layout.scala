@@ -1,7 +1,5 @@
 package jp.co.applibot.abc.shared.styles
 
-import jp.co.applibot.abc.shared.styles.Home.style
-
 import scalacss.DevDefaults._
 
 object Layout extends StyleSheet.Inline {
@@ -12,15 +10,15 @@ object Layout extends StyleSheet.Inline {
   val container = style(
     borderWidth(2 px, 0 px, 0 px, 0 px),
     borderStyle.solid,
-    borderColor(Color("#0fabff")),
+    borderColor(Color(Colors.lightBlue500)),
     width(100 %%),
     height(100 %%),
-    backgroundColor(Color("#f9f9f9")),
+    backgroundColor(Color(Colors.grey50)),
   )
 
   val header = style(
     position.fixed,
-    backgroundColor(Color("white")),
+    backgroundColor(Color(Colors.white)),
     width(100 %%),
     height(headerHeight px),
     textAlign.center,

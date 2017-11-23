@@ -8,43 +8,39 @@ import jp.co.applibot.abc.actions.{ChatActions, WebActions}
 import jp.co.applibot.abc.models.Props
 import jp.co.applibot.abc.react.BackendUtils
 import jp.co.applibot.abc.shared.models._
+import jp.co.applibot.abc.shared.styles
 
 import scala.scalajs.js.Date
+
+import scalacss.ScalaCssReact._
 
 object Chat {
   class Backend(override val bs: BackendScope[Props, Unit]) extends BackendUtils[Props, Unit] {
     def render(props: Props) = {
       <.div(
-        <.header(
-//          state.chat.userPublicOption.map { userPublic =>
-//            <.label(s"ID: ${userPublic.id}, ニックネーム: ${userPublic.nickname}")
-//          }.getOrElse(EmptyVdom),
-          <.button(
-            "ログアウト",
-            ^.onClick --> handleLogout,
-          ),
+        styles.Chat.root,
+        <.nav(
+          styles.Chat.localNavigation,
+          "local-navigation",
         ),
         <.div(
-          <.div(
-//            renderCreateChatRoom(state.chat.titleOfNewChatRoom, state.chat.isCreateNewChatRoomDialogOpen),
+          styles.Chat.container,
+          <.section(
+            styles.Chat.rooms,
+            "チャットルーム一覧"
+          ),
+          <.section(
+            styles.Chat.room,
             <.div(
-              <.div("参加しているチャットルーム"),
-//              renderJoinedChatRooms(state.chat.joinedChatRoomsOption)
+              styles.Chat.items,
+              "items",
             ),
             <.div(
-              <.div("参加出来るチャットルーム"),
-//              renderAvailableChatRooms(state.chat.joinedChatRoomsOption, state.chat.availableChatRoomsOption)
-            )
-          ),
-          <.div(
-//            state.chat.selectedChatRoomOption match {
-//              case None =>
-//                <.div("チャットルームにJoinしてください")
-//              case Some(chatRoom) =>
-//                renderMessages(state.chat.messages.get(chatRoom.id), state.chat.editingMessage)
-//            }
-          ),
-        ),
+              styles.Chat.controller,
+              "controller",
+            ),
+          )
+        )
       )
     }
 

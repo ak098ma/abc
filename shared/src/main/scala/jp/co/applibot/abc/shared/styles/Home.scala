@@ -25,7 +25,7 @@ object Home extends StyleSheet.Inline {
     width(panelSize px),
     height(panelSize px),
     padding((panelSize - iconSize - 24) / 2 px, (panelSize - iconSize) / 2 px),
-    backgroundColor(Color("white")),
+    backgroundColor(Color(Colors.white)),
     borderRadius(8 px),
   )
 
@@ -36,10 +36,11 @@ object Home extends StyleSheet.Inline {
     ),
     &.hover(
       opacity(1),
+      transform := "scale(1.04, 1.04)",
     ),
     opacity(0.7),
-    width(iconSize + 8 px),
-    height(iconSize + 32 px),
+    width(iconSize px),
+    height(iconSize + 24 px),
     cursor.pointer,
     transitionDuration(0.3.seconds),
   )

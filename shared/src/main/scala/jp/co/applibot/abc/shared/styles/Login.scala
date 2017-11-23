@@ -74,7 +74,7 @@ object Login extends StyleSheet.Inline {
     &.hover(
       textDecoration := "underline",
     ),
-    color(Color("#0fabff")),
+    color(Color(Colors.lightBlue500)),
     fontSize(12 px),
     fontWeight.lighter,
     cursor.pointer,
