@@ -24,7 +24,7 @@ case class Subscribe(room: Room, actorRef: ActorRef, userPublic: UserPublic) ext
 
 case class UnSubscribe(room: Room, actorRef: ActorRef, userPublic: UserPublic) extends SocketManagerEvent
 
-case class Send(target: Target, message: String) extends SocketManagerEvent
+case class Send(target: Target, message: String, userId: String) extends SocketManagerEvent
 
 case class SocketUser(actorRef: ActorRef, userPublic: UserPublic)
 
@@ -77,7 +77,7 @@ class SocketManager(userStore: UserStore, chatRoomStore: ChatRoomStore, messageS
       val socketUsers = rooms.getOrElse(chatRoomId, Seq.empty)
       rooms = rooms.updated(chatRoomId, SocketUser(actorRef, userPublic) +: socketUsers.filterNot(_.userPublic.id == userPublic.id))
       messageStore.get(chatRoomId, 0, 7).map(_.map { message =>
-        ReceivedMessage(chatRoomId = chatRoomId, messageId = message.id, message = message.message, timestamp = message.timestamp)
+        ReceivedMessage(chatRoomId = chatRoomId, messageId = message.id, userId = message.userId, message = message.message, timestamp = message.timestamp)
       }).foreach(messages => actorRef ! ServerToClientEvent(receivedMessagesOption = Some(messages)))
 
     case UnSubscribe(Room(chatRoomId), _, userPublic) =>
@@ -112,11 +112,11 @@ class SocketManager(userStore: UserStore, chatRoomStore: ChatRoomStore, messageS
           }
         }
 
-    case Send(Service, message) =>
+    case Send(Service, message, userId) =>
 
-    case Send(Room(chatRoomId), message) =>
-      messageStore.add(chatRoomId, message).foreach { message =>
-        rooms.get(chatRoomId).foreach(_.foreach(_.actorRef ! ServerToClientEvent(receivedMessageOption = Some(ReceivedMessage(chatRoomId = chatRoomId, messageId = message.id, message = message.message, timestamp = message.timestamp)))))
+    case Send(Room(chatRoomId), message, userId) =>
+      messageStore.add(chatRoomId, message, userId).foreach { message =>
+        rooms.get(chatRoomId).foreach(_.foreach(_.actorRef ! ServerToClientEvent(receivedMessageOption = Some(ReceivedMessage(chatRoomId = chatRoomId, messageId = message.id, userId = message.userId, message = message.message, timestamp = message.timestamp)))))
       }
   }
 }

@@ -16,7 +16,7 @@ trait MessageStore {
     */
   def get(chatRoomId: String, from: Int, until: Int)(implicit ec: ExecutionContext): Future[Seq[Message]]
 
-  def add(chatRoomId: String, newMessage: String)(implicit ec: ExecutionContext): Future[Message]
+  def add(chatRoomId: String, newMessage: String, userId: String)(implicit ec: ExecutionContext): Future[Message]
 
   def delete(chatRoomId: String, message: Message)(implicit ec: ExecutionContext): Future[Option[Message]]
 }

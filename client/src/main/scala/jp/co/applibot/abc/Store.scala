@@ -29,7 +29,7 @@ object Store {
       editingMessage = "",
     ),
     user = UserState(
-      tokenOption = None,
+      tokenOption = TokenManager.getToken,
     ),
   )
 

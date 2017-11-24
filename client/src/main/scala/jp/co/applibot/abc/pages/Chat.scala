@@ -24,40 +24,58 @@ object Chat {
             url = s"ws://${window.location.hostname}:${window.location.port}/chat/socket?token=$token",
             renderer = (rendererProps) => {
               val chatActions = new ChatActions(props, rendererProps)
-              <.div(
-                styles.Chat.root,
-                <.nav(
-                  styles.Chat.localNavigation,
-                  "local-navigation",
-                ),
-                <.div(
-                  styles.Chat.container,
-                  <.section(
-                    styles.Chat.rooms,
-                    <.div(
-                      styles.Chat.roomsController,
-                      <.button(
-                        styles.Chat.addRoomButton,
-                      ),
-                    ),
-                  ),
-                  <.section(
-                    styles.Chat.chat,
-                    <.div(
-                      styles.Chat.items,
-                      "items",
-                    ),
-                    <.div(
-                      styles.Chat.chatController,
-                      "controller",
-                    ),
-                  )
-                )
-              )
+              renderContent(props, rendererProps, chatActions)
             },
             messageHandler = (messageEvent) => Callback.empty
           ))
       }
+    }
+
+    def renderContent(props: Props, state: WebSocket.WebSocketState, actions: ChatActions) = {
+      <.div(
+        styles.Chat.root,
+        <.section(
+          styles.Chat.rooms,
+          <.nav(
+            styles.Chat.roomNav,
+            <.button(
+              styles.Chat.addRoomButton,
+            ),
+          ),
+          <.ul(
+            styles.Chat.roomList,
+          ),
+        ),
+        <.section(
+          styles.Chat.chat,
+          <.nav(
+            styles.Chat.chatTitle,
+          ),
+          <.div(
+            styles.Chat.messages,
+          ),
+          <.div(
+            styles.Chat.chatController,
+            <.input(
+              styles.Chat.inputMessage,
+              ^.placeholder := "何か発言してみよう！",
+            ),
+            <.button(
+              styles.Chat.sendButton,
+            ),
+          ),
+        ),
+        <.section(
+          styles.Chat.users,
+          <.nav(
+            styles.Chat.you,
+            "your info"
+          ),
+          <.div(
+            styles.Chat.members,
+          ),
+        )
+      )
     }
   }
 

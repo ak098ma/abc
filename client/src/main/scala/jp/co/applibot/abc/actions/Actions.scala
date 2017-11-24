@@ -1,6 +1,7 @@
 package jp.co.applibot.abc.actions
 
 import japgolly.scalajs.react.Callback
+import jp.co.applibot.abc.TokenManager
 import jp.co.applibot.abc.models._
 
 class Actions(private[this] val update: (State => State) => Callback) {
@@ -22,7 +23,7 @@ class Actions(private[this] val update: (State => State) => Callback) {
 
   def setLoginPassword(password: String): Callback = updateLoginState(_.copy(password = password))
 
-  def setToken(token: String): Callback = updateUserState(_.copy(tokenOption = Some(token)))
+  def setToken(token: String): Callback = Callback(TokenManager.update(token)) >> updateUserState(_.copy(tokenOption = Some(token)))
 
-  def clearToken(): Callback = updateUserState(_.copy(tokenOption = None))
+  def clearToken(): Callback = Callback(TokenManager.delete()) >> updateUserState(_.copy(tokenOption = None))
 }
