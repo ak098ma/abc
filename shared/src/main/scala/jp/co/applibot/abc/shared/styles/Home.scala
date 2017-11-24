@@ -46,13 +46,9 @@ object Home extends StyleSheet.Inline {
   )
 
   private val icon = mixin(
+    Button.icon,
     width(iconSize px),
     height(iconSize px),
-    backgroundRepeat := "no-repeat",
-    backgroundSize := "contain",
-    backgroundColor.transparent,
-    borderStyle.none,
-    outline.`0`,
   )
 
   val signUp = style(

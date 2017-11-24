@@ -2,7 +2,6 @@ package jp.co.applibot.abc.components
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
-
 import jp.co.applibot.abc.shared.styles
 
 import scalacss.ScalaCssReact._

@@ -14,6 +14,7 @@ object Layout {
   class Backend(bs: BackendScope[Props, Unit]) {
     def render(props: Props) = {
       def isHomePage = props.router.pathname == "/"
+
       <.div(
         styles.Layout.container,
         <.header(

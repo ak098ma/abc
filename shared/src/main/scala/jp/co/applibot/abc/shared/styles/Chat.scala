@@ -1,9 +1,12 @@
 package jp.co.applibot.abc.shared.styles
 
 import scalacss.DevDefaults._
+import scala.concurrent.duration._
 
 object Chat extends StyleSheet.Inline {
   import dsl._
+
+  private val iconSize = 32
 
   val root = style(
     position.relative,
@@ -36,7 +39,37 @@ object Chat extends StyleSheet.Inline {
     height(100 %%),
   )
 
-  val room = style(
+  val roomsController = style(
+    width(100 %%),
+    textAlign.center,
+  )
+
+  val addRoomButton = style(
+    &.hover(
+      opacity(1),
+      transform := "scale(1.1, 1.1)",
+    ),
+    &.active(
+      transitionDuration(0.seconds),
+      transform := "scale(1, 1)",
+    ),
+    opacity(0.7),
+    Button.icon,
+    width(iconSize px),
+    height(iconSize px),
+    backgroundImage := "url('/assets/images/icons/add.png')",
+    transitionDuration(0.3.seconds),
+  )
+
+  val joinedRoom = style(
+
+  )
+
+  val availableRoom = style(
+
+  )
+
+  val chat = style(
     width(100 %%),
     height(100 %%),
     backgroundColor(Color(Colors.white)),
@@ -51,7 +84,19 @@ object Chat extends StyleSheet.Inline {
     padding(0 px, 0 px, 32 px, 0 px),
   )
 
-  val controller = style(
+  val itemSystem = style(
+
+  )
+
+  val itemSelf = style(
+
+  )
+
+  val itemOthers = style(
+
+  )
+
+  val chatController = style(
     borderWidth(1 px, 0 px, 0 px, 0 px),
     borderStyle.solid,
     borderColor(Color(Colors.grey200)),

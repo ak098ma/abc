@@ -5,14 +5,13 @@ import japgolly.scalajs.react.component.Scala.Unmounted
 import japgolly.scalajs.react.vdom.html_<^._
 import jp.co.applibot.abc.components.FormItem
 import jp.co.applibot.abc.models.Props
-import jp.co.applibot.abc.react.BackendUtils
 import jp.co.applibot.abc.shared.styles
 
 import scalacss.ScalaCssReact._
 
 object Login {
 
-  class Backend(override val bs: BackendScope[Props, Unit]) extends BackendUtils[Props, Unit] {
+  class Backend(bs: BackendScope[Props, Unit]) {
     def render(props: Props) = {
       <.div(
         styles.Login.container,
@@ -27,11 +26,11 @@ object Login {
                 styles.Login.loginButtonContainer,
                 <.button(
                   styles.Login.loginButton,
-                  ^.onClick --> props.webActions.login,
                 ),
                 <.div(
                   "ログイン"
                 ),
+                ^.onClick --> props.webActions.login,
               )
             ),
           ),

@@ -1,25 +1,8 @@
 package jp.co.applibot.abc.actions
 
-import jp.co.applibot.abc.shared.models.ChatRoom
+import jp.co.applibot.abc.components.WebSocket.WebSocketState
+import jp.co.applibot.abc.models.Props
 
-object ChatActions {
-  def openCreateChatRoomDialog(): Unit = {
-//    Store.updateChatState(_.copy(isCreateNewChatRoomDialogOpen = true))
-  }
+class ChatActions(props: Props, webSocketState: WebSocketState) {
 
-  def closeCreateChatRoomDialog(): Unit = {
-//    Store.updateChatState(_.copy(isCreateNewChatRoomDialogOpen = false))
-  }
-
-  def setTitleOfNewChatRoom(title: String): Unit = {
-//    Store.updateChatState(_.copy(titleOfNewChatRoom = title))
-  }
-
-  def showRoom(chatRoom: ChatRoom): Unit = {
-//    Store.updateChatState(_.copy(selectedChatRoomOption = Some(chatRoom)))
-  }
-
-  def setMessage(message: String): Unit = {
-//    Store.updateChatState(_.copy(editingMessage = message))
-  }
 }
