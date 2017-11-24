@@ -114,6 +114,9 @@ object Chat extends StyleSheet.Inline {
 
   val you = style(
     flex := "0 0 40px",
+    display.flex,
+    justifyContent.center,
+    alignItems.center,
     divider,
     borderWidth(0.px, 0.px, 1.px, 0.px),
   )

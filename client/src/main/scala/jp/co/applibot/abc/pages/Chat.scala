@@ -31,7 +31,7 @@ object Chat {
       }
     }
 
-    def renderContent(props: Props, state: WebSocket.WebSocketState, actions: ChatActions) = {
+    def renderContent(props: Props, state: WebSocket.WebSocketState, actions: ChatActions): VdomElement = {
       <.div(
         styles.Chat.root,
         <.section(
