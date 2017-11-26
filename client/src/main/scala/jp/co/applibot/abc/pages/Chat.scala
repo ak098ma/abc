@@ -26,7 +26,13 @@ object Chat {
               val chatActions = new ChatActions(props, rendererProps)
               renderContent(props, rendererProps, chatActions)
             },
-            messageHandler = (messageEvent) => Callback.empty
+            messageHandler = (messageEvent) => Callback.empty,
+            closeHandler = (closeEvent) => closeEvent.code match {
+              case 1000 =>
+                Callback.empty
+              case c =>
+                props.webActions.refreshToken
+            }
           ))
       }
     }

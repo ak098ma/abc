@@ -9,15 +9,16 @@ import scala.scalajs.js
 
 object WebSocket {
 
-  case class Props(url: String, renderer: WebSocketState => VdomElement, messageHandler: MessageEvent => Callback)
+  case class Props(url: String,
+                   renderer: WebSocketState => VdomElement,
+                   messageHandler: MessageEvent => Callback,
+                   closeHandler: CloseEvent => Callback = (_) => Callback.empty)
 
   case class State(webSocketOption: Option[WebSocket] = None,
-                   isOpen: Boolean = false,
-                   closeEventOption: Option[CloseEvent] = None)
+                   isOpen: Boolean = false)
 
   case class WebSocketState(isConnected: Boolean,
                             isOpen: Boolean,
-                            closeEventOption: Option[CloseEvent],
                             webSocketActions: WebSocketActions)
 
   class Backend(bs: BackendScope[Props, State]) {
@@ -33,7 +34,6 @@ object WebSocket {
     def render(props: Props, state: State) = props.renderer(WebSocketState(
       isConnected = state.webSocketOption.nonEmpty,
       isOpen = state.isOpen,
-      closeEventOption = state.closeEventOption,
       webSocketActions,
     ))
 
@@ -54,29 +54,29 @@ object WebSocket {
 
     private val onOpen: js.Function1[Event, Unit] = (_) => bs.modState(_.copy(isOpen = true)).runNow()
 
-    private val onClose: js.Function1[CloseEvent, Unit] = (closeEvent) => bs.state.map { state =>
-      state.webSocketOption.foreach { webSocket =>
-        webSocket.removeEventListener("open", onOpen)
-        webSocket.removeEventListener("error", onError)
-        webSocket.removeEventListener("message", onMessage)
-        webSocket.removeEventListener("close", onClose)
-      }
-      closeEvent.code match {
-        case 1000 => // normal closure
-        case 1006 => // closed abnormally ( unauthorized reaches here )
-        // TODO: handle abnormal closure
-        case _ =>
-          throw new IllegalStateException(
-            s"""WebSocket was closed with unexpected status:
-               |code=${closeEvent.code},
-               |reason=${closeEvent.reason}
-               |wasClean=${closeEvent.wasClean}""".stripMargin)
-      }
-    }.runNow()
+    private val onClose: js.Function1[CloseEvent, Unit] = (closeEvent) => bs.props.flatMap( props => bs.modState { state =>
+      state.webSocketOption.foreach(removeAllListeners)
+      props.closeHandler(closeEvent)
+      state.copy(webSocketOption = None, isOpen = false)
+    }).runNow()
 
-    private def close(code: Int) = bs.state.map(_.webSocketOption.foreach(_.close(code, "正常終了")))
+    private def removeAllListeners(webSocket: WebSocket): Unit = {
+      webSocket.removeEventListener("open", onOpen)
+      webSocket.removeEventListener("error", onError)
+      webSocket.removeEventListener("message", onMessage)
+      webSocket.removeEventListener("close", onClose)
+    }
 
-    def componentWillMount: Callback = create
+    private def close(code: Int) = bs.state.map { state =>
+      state.webSocketOption.foreach(removeAllListeners)
+      state.webSocketOption.foreach(_.close(1000, "componentWillUnmount"))
+    }
+
+    def componentWillMount: Callback = create >> Callback{
+      window.setTimeout(() => {
+        close(1000).runNow()
+      }, 3000)
+    }
 
     def componentWillUnmount: Callback = close(1000)
   }

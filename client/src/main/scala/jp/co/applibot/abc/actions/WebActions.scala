@@ -1,6 +1,7 @@
 package jp.co.applibot.abc.actions
 
 import japgolly.scalajs.react.Callback
+import jp.co.applibot.abc.TokenManager
 import jp.co.applibot.abc.models.State
 import jp.co.applibot.abc.shared.models.{JsonWebToken, User, UserCredential}
 import jp.co.applibot.abc.web.APIClient
@@ -57,6 +58,23 @@ class WebActions(state: State, actions: Actions, router: Router.Router)(implicit
           Callback.warn("ユーザーIDもしくはパスワードが間違っています。")
         case _ =>
           Callback.empty
+      }
+    })
+  }
+
+  def refreshToken: Callback = {
+    Callback.future(APIClient.refreshToken.map { response =>
+      response.status match {
+        case 200 =>
+          Callback.future(response.getJson.map(Json.fromJson[JsonWebToken]).map(_.get).map { jwt =>
+            Callback(TokenManager.update(jwt.token))
+          })
+        case 401 =>
+          TokenManager.delete()
+          router.push("/login")
+        case x =>
+          TokenManager.delete()
+          Callback.warn(s"unexpected state: $x")
       }
     })
   }
