@@ -1,7 +1,6 @@
 package jp.co.applibot.abc.actions
 
 import japgolly.scalajs.react.Callback
-import jp.co.applibot.abc.TokenManager
 import jp.co.applibot.abc.models.State
 import jp.co.applibot.abc.shared.models.{JsonWebToken, User, UserCredential}
 import jp.co.applibot.abc.web.APIClient
@@ -62,19 +61,17 @@ class WebActions(state: State, actions: Actions, router: Router.Router)(implicit
     })
   }
 
-  def refreshToken: Callback = {
+  def refreshToken(onSuccess: Callback = Callback.empty): Callback = {
     Callback.future(APIClient.refreshToken.map { response =>
       response.status match {
         case 200 =>
           Callback.future(response.getJson.map(Json.fromJson[JsonWebToken]).map(_.get).map { jwt =>
-            Callback(TokenManager.update(jwt.token))
+            actions.setToken(jwt.token) >> onSuccess
           })
         case 401 =>
-          TokenManager.delete()
-          router.push("/login")
+          actions.clearToken() >> router.push("/login")
         case x =>
-          TokenManager.delete()
-          Callback.warn(s"unexpected state: $x")
+          actions.clearToken() >> Callback.warn(s"unexpected state: $x")
       }
     })
   }
