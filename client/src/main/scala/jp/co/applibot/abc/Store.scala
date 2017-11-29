@@ -4,6 +4,7 @@ import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.VdomElement
 import jp.co.applibot.abc.actions.Actions
 import jp.co.applibot.abc.models._
+import jp.co.applibot.abc.shared.models.UserPublic
 
 object Store {
   type Props = (State, Actions) => VdomElement
@@ -19,7 +20,7 @@ object Store {
       password = "",
     ),
     chat = ChatState(
-      userPublicOption = None,
+      users = Map.empty[String, UserPublic],
       joinedChatRoomsOption = None,
       availableChatRoomsOption = None,
       isCreateNewChatRoomDialogOpen = false,
@@ -30,6 +31,7 @@ object Store {
     ),
     user = UserState(
       tokenOption = TokenManager.getToken,
+      publicOption = None,
     ),
   )
 

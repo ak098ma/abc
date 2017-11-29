@@ -3,7 +3,9 @@ package jp.co.applibot.abc.pages
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.component.Scala.Unmounted
 import japgolly.scalajs.react.vdom.html_<^._
+import jp.co.applibot.abc.actions.ChatActions
 import jp.co.applibot.abc.models.Props
+import jp.co.applibot.abc.shared.models.{ChatRoom, ChatRooms}
 import jp.co.applibot.abc.shared.styles
 import org.scalajs.dom._
 
@@ -17,11 +19,15 @@ object Chat {
 
   class Backend(bs: BackendScope[Props, State]) {
 
-    val onOpen: js.Function1[Event, Unit] = (event) => {
+    val onOpen: js.Function1[Event, Unit] = (_) => {
       bs.modState(_.copy(isOpen = false)).runNow()
     }
-    val onMessage: js.Function1[MessageEvent, Unit] = (messageEvent) => {}
-    val onError: js.Function1[Event, Unit] = (event) => {}
+    val onMessage: js.Function1[MessageEvent, Unit] = (messageEvent) => {
+      bs.props.flatMap { props => bs.state.map { state =>
+        new ChatActions(props, state).handleMessage(messageEvent.data.toString)
+      }}.runNow()
+    }
+    val onError: js.Function1[Event, Unit] = (_) => {}
     val onClose: js.Function1[CloseEvent, Unit] = (closeEvent) => {
       removeAllWebSocketListeners.runNow()
       closeEvent.code match {
@@ -70,6 +76,7 @@ object Chat {
     }
 
     def render(props: Props, state: State): VdomElement = {
+      val chatActions = new ChatActions(props, state)
       <.div(
         styles.Chat.root,
         <.section(
@@ -82,6 +89,7 @@ object Chat {
           ),
           <.ul(
             styles.Chat.roomList,
+            renderRooms(props.state.chat.joinedChatRoomsOption, props.state.chat.availableChatRoomsOption),
           ),
         ),
         <.section(
@@ -107,13 +115,28 @@ object Chat {
           styles.Chat.users,
           <.nav(
             styles.Chat.you,
-            "your info"
+            props.state.user.publicOption.map(userPublic => <.label(s"${userPublic.nickname} さん")).getOrElse(EmptyVdom),
           ),
           <.div(
             styles.Chat.members,
           ),
         )
       )
+    }
+
+    def renderRooms(joinedRoomsOption: Option[ChatRooms], availableRoomsOption: Option[ChatRooms]) = {
+      joinedRoomsOption.flatMap { joinedRooms =>
+        availableRoomsOption.map { availableRooms =>
+          joinedRooms.rooms.map((true, _)) ++ availableRooms.rooms.map((false, _))
+        }
+      }.map { combinedRooms =>
+        combinedRooms.map { case (isJoinedRoom, chatRoom) =>
+          <.li(
+            ^.key := s"room_${chatRoom.id}",
+            chatRoom.title
+          )
+        }.toVdomArray
+      }.getOrElse(<.li("参加可能な部屋がありません。上の + マークから部屋を作成しましょう。"))
     }
 
     def componentWillUnmount = bs.state.map(_.webSocketOption.foreach(_.close(1000, "正常終了")))

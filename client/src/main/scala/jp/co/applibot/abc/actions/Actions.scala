@@ -3,6 +3,7 @@ package jp.co.applibot.abc.actions
 import japgolly.scalajs.react.Callback
 import jp.co.applibot.abc.TokenManager
 import jp.co.applibot.abc.models._
+import jp.co.applibot.abc.shared.models.{ChatRooms, UserPublic}
 
 class Actions(private[this] val update: (State => State) => Callback) {
   private def updateLoginState(updateLogin: LoginState => LoginState): Callback = update(state => state.copy(login = updateLogin(state.login)))
@@ -26,4 +27,10 @@ class Actions(private[this] val update: (State => State) => Callback) {
   def setToken(token: String): Callback = Callback(TokenManager.update(token)) >> updateUserState(_.copy(tokenOption = Some(token)))
 
   def clearToken(): Callback = Callback(TokenManager.delete()) >> updateUserState(_.copy(tokenOption = None))
+
+  def setUserInfo(userPublic: UserPublic): Callback = updateUserState(_.copy(publicOption = Some(userPublic)))
+
+  def setJoinedRooms(joinedRooms: ChatRooms): Callback = updateChatState(_.copy(joinedChatRoomsOption = Some(joinedRooms)))
+
+  def setAvailableRooms(availableRooms: ChatRooms): Callback = updateChatState(_.copy(availableChatRoomsOption = Some(availableRooms)))
 }
