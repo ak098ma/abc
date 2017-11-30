@@ -143,4 +143,8 @@ object Chat extends StyleSheet.Inline {
     backgroundImage := "url('/assets/images/icons/add.png')",
     transitionDuration(0.3.seconds),
   )
+
+  val createRoomModal = style(
+
+  )
 }

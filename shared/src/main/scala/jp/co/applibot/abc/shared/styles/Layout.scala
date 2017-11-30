@@ -44,44 +44,55 @@ object Layout extends StyleSheet.Inline {
   )
 
   val closingDurationMillis = 0.3.seconds
+  val modalBackground = Color("rgba(0,0,0,0.4)")
 
   val modalMixin = mixin(
     position.absolute,
     width(max),
     height(max),
     animationDuration(closingDurationMillis),
-    backgroundColor(Color(Colors.black)),
   )
 
   val openingAnimation = keyframes(
     0.%% -> keyframe(
+      backgroundColor(Color(Colors.transparent)),
       opacity(0),
     ),
     100.%% -> keyframe(
-      opacity(0.3),
+      backgroundColor(modalBackground),
+      opacity(1),
     )
   )
 
   val closingAnimation = keyframes(
     0.%% -> keyframe(
-      opacity(0.3),
+      backgroundColor(modalBackground),
+      opacity(1),
     ),
     100.%% -> keyframe(
+      backgroundColor(Color(Colors.transparent)),
       opacity(0),
     )
   )
 
   val modal = style(
     modalMixin,
-    opacity(0.3),
+    backgroundColor(modalBackground),
     animationName(openingAnimation),
     animationIterationCount.count(1),
-    display.block,
+    display.flex,
+    justifyContent.center,
+    alignItems.center,
+    opacity(1),
   )
 
   val modalClosing = style(
     modalMixin,
-    display.block,
+    display.flex,
+    justifyContent.center,
+    alignItems.center,
+    opacity(0),
+    backgroundColor(Color(Colors.transparent)),
     animationName(closingAnimation),
     animationIterationCount.count(1),
   )
@@ -89,6 +100,11 @@ object Layout extends StyleSheet.Inline {
   val modalClosed = style(
     modalMixin,
     display.none,
+    backgroundColor(Color(Colors.transparent)),
     opacity(0),
+  )
+
+  val modalContent = style(
+    backgroundColor(Color(Colors.white)),
   )
 }

@@ -37,7 +37,7 @@ object Layout {
         ),
         <.div(
           if (isModalOpen) styles.Layout.modal else if (isModalClosing) styles.Layout.modalClosing else styles.Layout.modalClosed,
-          props.state.modal.modalOption.getOrElse(EmptyVdom),
+          animationState.modalOption.map(vdom => <.div(vdom, styles.Layout.modalContent, ^.onClick ==> ((event: ReactMouseEvent) => event.stopPropagationCB))).getOrElse(EmptyVdom),
           ^.onClick --> props.actions.closeModal,
         ),
       )

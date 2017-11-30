@@ -10,4 +10,6 @@ object Colors {
   val grey300 = "#E0E0E0"
 
   val lightBlue500 = "#03A9F4"
+
+  val transparent = "rgba(0,0,0,0)"
 }
