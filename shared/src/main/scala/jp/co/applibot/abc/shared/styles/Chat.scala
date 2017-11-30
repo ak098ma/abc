@@ -137,14 +137,35 @@ object Chat extends StyleSheet.Inline {
     ),
     opacity(0.7),
     Button.icon,
-    width(iconSize px),
-    height(iconSize px),
+    width(iconSize.px),
+    height(iconSize.px),
     cursor.pointer,
     backgroundImage := "url('/assets/images/icons/add.png')",
     transitionDuration(0.3.seconds),
   )
 
   val createRoomModal = style(
+    backgroundColor(Color(Colors.white)),
+    borderRadius(4.px),
+    padding(8.px),
+    width(256.px),
+    textAlign.center,
+  )
 
+  val roomTitleInput = style(
+    width(214.px),
+    padding(4.px),
+    margin(8.px),
+  )
+
+  val createRoomModalControllerContainer = style(
+    display.flex,
+    justifyContent.center,
+  )
+
+  val modalButtonBase = style(
+    width(80.px),
+    height(24.px),
+    margin(0.px, 8.px),
   )
 }

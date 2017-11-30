@@ -29,10 +29,8 @@ object Main {
           case _ => NotFound(props)
         }
         val layoutProps = Layout.Props(
-          state = state,
-          actions = actions,
+          state = props,
           content = content,
-          router = router,
         )
         Layout(layoutProps)
       }

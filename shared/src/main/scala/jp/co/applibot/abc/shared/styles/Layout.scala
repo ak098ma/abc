@@ -103,8 +103,4 @@ object Layout extends StyleSheet.Inline {
     backgroundColor(Color(Colors.transparent)),
     opacity(0),
   )
-
-  val modalContent = style(
-    backgroundColor(Color(Colors.white)),
-  )
 }

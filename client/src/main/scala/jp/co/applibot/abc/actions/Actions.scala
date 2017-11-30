@@ -37,7 +37,9 @@ class Actions(private[this] val update: (State => State) => Callback) {
 
   def setAvailableRooms(availableRooms: ChatRooms): Callback = updateChatState(_.copy(availableChatRoomsOption = Some(availableRooms)))
 
-  def openModal(vdom: VdomElement): Callback = updateModalState(_.copy(modalOption = Some(vdom)))
+  def openModal(renderModal: Props => VdomElement): Callback = updateModalState(_.copy(renderModalOption = Some(renderModal)))
 
-  def closeModal(): Callback = updateModalState(_.copy(modalOption = None))
+  def closeModal(): Callback = updateModalState(_.copy(renderModalOption = None))
+
+  def setTitleOfNewChatRoom(title: String): Callback = updateChatState(_.copy(titleOfNewChatRoom = title))
 }

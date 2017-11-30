@@ -85,7 +85,12 @@ object Chat {
             styles.Chat.roomNav,
             <.button(
               styles.Chat.addRoomButton,
-              ^.onClick --> props.actions.openModal(<.div("Create Room", styles.Chat.createRoomModal)),
+              ^.onClick --> (props.actions.setTitleOfNewChatRoom("") >> props.actions.openModal((p) => renderCreateRoom(
+                cancel = p.actions.closeModal,
+                create = () => chatActions.createRoom(p.state.chat.titleOfNewChatRoom),
+                title = p.state.chat.titleOfNewChatRoom,
+                onChange = p.actions.setTitleOfNewChatRoom,
+              ))),
             ),
           ),
           <.ul(
@@ -142,6 +147,39 @@ object Chat {
           }.toVdomArray
         }
       }.getOrElse(<.li("読み込み中です..."))
+    }
+
+    def renderCreateRoom(cancel: () => Callback, create: () => Callback, title: String, onChange: (String) => Callback) = {
+      <.div(
+        styles.Chat.createRoomModal,
+        <.div(
+          "チャットルームの作成"
+        ),
+        <.div(
+          <.input(
+            styles.Chat.roomTitleInput,
+            ^.placeholder := "タイトル...",
+            ^.value := title,
+            ^.onChange ==> ((event: ReactEventFromInput) => {
+              val value = event.target.value
+              onChange(value)
+            })
+          ),
+        ),
+        <.div(
+          styles.Chat.createRoomModalControllerContainer,
+          <.button(
+            styles.Chat.modalButtonBase,
+            "キャンセル",
+            ^.onClick --> cancel(),
+          ),
+          <.button(
+            styles.Chat.modalButtonBase,
+            "作成する",
+            ^.onClick --> create(),
+          ),
+        )
+      )
     }
 
     def componentWillUnmount = bs.state.map(_.webSocketOption.foreach(_.close(1000, "正常終了")))

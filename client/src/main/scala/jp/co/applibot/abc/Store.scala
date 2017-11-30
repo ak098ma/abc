@@ -11,7 +11,7 @@ object Store {
 
   private val initialState = State(
     modal = ModalState(
-      modalOption = None,
+      renderModalOption = None,
     ),
     login = LoginState(
       id = "",
