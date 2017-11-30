@@ -130,13 +130,17 @@ object Chat {
           joinedRooms.rooms.map((true, _)) ++ availableRooms.rooms.map((false, _))
         }
       }.map { combinedRooms =>
-        combinedRooms.map { case (isJoinedRoom, chatRoom) =>
-          <.li(
-            ^.key := s"room_${chatRoom.id}",
-            chatRoom.title
-          )
-        }.toVdomArray
-      }.getOrElse(<.li("参加可能な部屋がありません。上の + マークから部屋を作成しましょう。"))
+        if (combinedRooms.isEmpty) {
+          <.li("参加可能な部屋がありません。上の + マークから部屋を作成しましょう。")
+        } else {
+          combinedRooms.map { case (isJoinedRoom, chatRoom) =>
+            <.li(
+              ^.key := s"room_${chatRoom.id}",
+              chatRoom.title
+            )
+          }.toVdomArray
+        }
+      }.getOrElse(<.li("読み込み中です..."))
     }
 
     def componentWillUnmount = bs.state.map(_.webSocketOption.foreach(_.close(1000, "正常終了")))
