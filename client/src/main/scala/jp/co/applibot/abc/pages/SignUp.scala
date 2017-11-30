@@ -20,7 +20,7 @@ object SignUp {
             styles.SignUp.form,
             FormItem(FormItem.Props("ユーザーID", props.state.signUp.id, "user id", props.actions.setSignUpId)),
             FormItem(FormItem.Props("ニックネーム", props.state.signUp.nickname, "nickname", props.actions.setSignUpNickname)),
-            FormItem(FormItem.Props("パスワード", props.state.signUp.password, "password", props.actions.setSignUpPassword, isCredential = true)),
+            FormItem(FormItem.Props("パスワード", props.state.signUp.password, "password", props.actions.setSignUpPassword, submit = () => props.webActions.signUp, isCredential = true)),
             <.div(
               styles.SignUp.signUpButtonRow,
               <.div(

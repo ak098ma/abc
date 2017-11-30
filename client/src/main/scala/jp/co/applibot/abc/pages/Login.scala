@@ -19,7 +19,7 @@ object Login {
           <.div(
             styles.Login.form,
             FormItem(FormItem.Props("ユーザーID", props.state.login.id, "user_id", props.actions.setLoginId)),
-            FormItem(FormItem.Props("パスワード", props.state.login.password, "password", props.actions.setLoginPassword, isCredential = true)),
+            FormItem(FormItem.Props("パスワード", props.state.login.password, "password", props.actions.setLoginPassword, submit = () => props.webActions.login, isCredential = true)),
             <.div(
               styles.Login.loginButtonRow,
               <.div(

@@ -91,7 +91,7 @@ object Chat extends StyleSheet.Inline {
     &.hover(sendButtonHighlight),
     &.focus(sendButtonHighlight),
     &.active(
-      transform := "scale(0.9, 0.9) rotate(-371deg)",
+      transform := "scale(0.9, 0.9) rotate(-11deg)",
       transitionDuration(0.seconds),
       opacity(0.7),
     ),
