@@ -10,6 +10,9 @@ object Store {
   type Props = (State, Actions) => VdomElement
 
   private val initialState = State(
+    modal = ModalState(
+      modalOption = None,
+    ),
     login = LoginState(
       id = "",
       password = "",

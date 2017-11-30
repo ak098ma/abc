@@ -1,6 +1,7 @@
 package jp.co.applibot.abc.shared.styles
 
 import scalacss.DevDefaults._
+import scala.concurrent.duration._
 
 object Layout extends StyleSheet.Inline {
   import dsl._
@@ -12,9 +13,6 @@ object Layout extends StyleSheet.Inline {
   val container = style(
     display.flex,
     flexDirection.column,
-    borderWidth(2.px, 0.px, 0.px, 0.px),
-    borderStyle.solid,
-    borderColor(Color(Colors.lightBlue500)),
     width(max),
     minWidth(768.px),
     height(max),
@@ -23,6 +21,9 @@ object Layout extends StyleSheet.Inline {
 
   val header = style(
     flex := s"0 0 ${headerHeight}px",
+    borderWidth(2.px, 0.px, 0.px, 0.px),
+    borderStyle.solid,
+    borderColor(Color(Colors.lightBlue500)),
     backgroundColor(Color(Colors.white)),
     width(max),
     textAlign.center,
@@ -40,5 +41,54 @@ object Layout extends StyleSheet.Inline {
     display.flex,
     flex := "1 0 0",
     width(max),
+  )
+
+  val closingDurationMillis = 0.3.seconds
+
+  val modalMixin = mixin(
+    position.absolute,
+    width(max),
+    height(max),
+    animationDuration(closingDurationMillis),
+    backgroundColor(Color(Colors.black)),
+  )
+
+  val openingAnimation = keyframes(
+    0.%% -> keyframe(
+      opacity(0),
+    ),
+    100.%% -> keyframe(
+      opacity(0.3),
+    )
+  )
+
+  val closingAnimation = keyframes(
+    0.%% -> keyframe(
+      opacity(0.3),
+    ),
+    100.%% -> keyframe(
+      opacity(0),
+    )
+  )
+
+  val modal = style(
+    modalMixin,
+    opacity(0.3),
+    animationName(openingAnimation),
+    animationIterationCount.count(1),
+    display.block,
+  )
+
+  val modalClosing = style(
+    modalMixin,
+    display.block,
+    animationName(closingAnimation),
+    animationIterationCount.count(1),
+  )
+
+  val modalClosed = style(
+    modalMixin,
+    display.none,
+    opacity(0),
   )
 }

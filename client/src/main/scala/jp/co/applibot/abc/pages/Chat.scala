@@ -85,6 +85,7 @@ object Chat {
             styles.Chat.roomNav,
             <.button(
               styles.Chat.addRoomButton,
+              ^.onClick --> props.actions.openModal(<.div("Create Room")),
             ),
           ),
           <.ul(

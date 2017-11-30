@@ -1,11 +1,14 @@
 package jp.co.applibot.abc.actions
 
 import japgolly.scalajs.react.Callback
+import japgolly.scalajs.react.vdom.VdomElement
 import jp.co.applibot.abc.TokenManager
 import jp.co.applibot.abc.models._
 import jp.co.applibot.abc.shared.models.{ChatRooms, UserPublic}
 
 class Actions(private[this] val update: (State => State) => Callback) {
+  private def updateModalState(updateModal: ModalState => ModalState): Callback = update(state => state.copy(modal = updateModal(state.modal)))
+
   private def updateLoginState(updateLogin: LoginState => LoginState): Callback = update(state => state.copy(login = updateLogin(state.login)))
 
   private def updateSignUpState(updateSignUp: SignUpState => SignUpState): Callback = update(state => state.copy(signUp = updateSignUp(state.signUp)))
@@ -33,4 +36,8 @@ class Actions(private[this] val update: (State => State) => Callback) {
   def setJoinedRooms(joinedRooms: ChatRooms): Callback = updateChatState(_.copy(joinedChatRoomsOption = Some(joinedRooms)))
 
   def setAvailableRooms(availableRooms: ChatRooms): Callback = updateChatState(_.copy(availableChatRoomsOption = Some(availableRooms)))
+
+  def openModal(vdom: VdomElement): Callback = updateModalState(_.copy(modalOption = Some(vdom)))
+
+  def closeModal(): Callback = updateModalState(_.copy(modalOption = None))
 }
