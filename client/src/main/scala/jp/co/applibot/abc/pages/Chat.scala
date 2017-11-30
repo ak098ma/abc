@@ -148,7 +148,7 @@ object Chat {
                 props.actions.setEditingMessage(value)
               }),
               ^.onKeyDown ==> ((event: ReactKeyboardEventFromInput) => {
-                if (event.key == "Enter") {
+                if (event.keyCode == 13) {
                   chatActions.sendMessage(props.state.chat.selectedChatRoomOption.get.id, props.state.chat.editingMessage)
                 } else {
                   Callback.empty
