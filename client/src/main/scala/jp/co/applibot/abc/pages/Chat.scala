@@ -199,12 +199,8 @@ object Chat {
         styles.Chat.room,
         ^.onClick --> selectRoom(chatRoom),
         <.div(
-          styles.Chat.roomTitle,
-          s"${chatRoom.title}${if (isJoinedRoom) " - joined" else ""}"
-        ),
-        <.div(
-          styles.Chat.joinedIcon,
-          "icon",
+          if (isJoinedRoom) styles.Chat.joinedRoomTitle else styles.Chat.availableRoomTitle,
+          s"${chatRoom.title}"
         ),
       )
     }

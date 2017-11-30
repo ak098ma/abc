@@ -57,16 +57,27 @@ object Chat extends StyleSheet.Inline {
     borderWidth(0.px, 0.px, 1.px, 0.px),
     borderStyle.solid,
     flex := "0 0 64px",
-    justifyContent.spaceBetween,
+    justifyContent.center,
     alignItems.center,
     cursor.pointer,
     userSelect := "none",
   )
 
-  val roomTitle = style(
+  private val roomTitleBase = mixin(
     margin(0.px, 20.px),
     width(128.px),
     textAlign.center,
+  )
+
+  val joinedRoomTitle = style(
+    roomTitleBase,
+    opacity(1),
+    fontWeight.bold,
+  )
+
+  val availableRoomTitle = style(
+    roomTitleBase,
+    opacity(0.4),
   )
 
   val joinedIcon = style(
