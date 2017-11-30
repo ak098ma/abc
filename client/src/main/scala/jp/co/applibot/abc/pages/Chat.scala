@@ -110,11 +110,10 @@ object Chat {
             props.state.user.publicOption.map { userPublic =>
               props.state.chat.selectedChatRoomOption.map { chatRoom =>
                 val messages = props.state.chat.messages.getOrElse(chatRoom.id, Seq.empty)
-                  .map(message => renderMessage(message, userPublic.id))
                 if (messages.isEmpty) {
                   <.div("最初のメッセージを送信しよう")
                 } else {
-                  messages.toVdomArray
+                  messages.sortBy(_.timestamp).map(renderMessage(_, userPublic.id)).toVdomArray
                 }
               }.getOrElse(<.div("チャットルームを選択してください"))
             }.getOrElse("ログインしてください！")
@@ -222,8 +221,11 @@ object Chat {
       val isMyMessage = message.userId == userId
       <.div(
         ^.key := s"message_${message.messageId}",
-        if (isMyMessage) styles.Chat.myMessage else styles.Chat.otherMessage,
-        <.div(message.message),
+        if (isMyMessage) styles.Chat.myMessageContainer else styles.Chat.otherMessageContainer,
+        <.div(
+          if (isMyMessage) styles.Chat.myMessage else styles.Chat.otherMessage,
+          message.message
+        ),
       )
     }
 

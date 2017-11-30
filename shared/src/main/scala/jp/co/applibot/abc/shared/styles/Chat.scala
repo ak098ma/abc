@@ -96,20 +96,37 @@ object Chat extends StyleSheet.Inline {
     display.flex,
     alignItems.center,
     width(100.%%),
+    padding(4.px),
+  )
+
+  val myMessageContainer = style(
+    messageMixin,
+    justifyContent.flexStart,
   )
 
   val myMessage = style(
-    messageMixin,
-    justifyContent.flexStart,
+    width(75.%%),
     borderColor(Color(Colors.lightBlue500)),
     borderStyle.solid,
     borderWidth(1.px),
-    borderRadius(4.px, 4.px, 4.px, 0.px),
+    borderRadius(12.px, 12.px, 12.px, 0.px),
+    padding(0.px, 4.px),
+    backgroundColor(Color(Colors.white)),
+  )
+
+  val otherMessageContainer = style(
+    messageMixin,
+    justifyContent.flexEnd,
   )
 
   val otherMessage = style(
-    messageMixin,
-    justifyContent.flexEnd,
+    width(75.%%),
+    borderColor(Color(Colors.grey300)),
+    borderStyle.solid,
+    borderWidth(1.px),
+    borderRadius(12.px, 12.px, 0.px, 12.px),
+    padding(0.px, 8.px),
+    backgroundColor(Color(Colors.white)),
   )
 
   val chatController = style(
