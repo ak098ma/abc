@@ -86,10 +86,16 @@ object Chat extends StyleSheet.Inline {
     flex := "0 0 40px",
     divider,
     borderWidth(0.px, 0.px, 1.px, 0.px),
+    display.flex,
+    justifyContent.spaceAround,
+    alignItems.center,
   )
 
   val messages = style(
     flex := "1 0 0",
+    display.flex,
+    flexDirection.column,
+    alignItems.center,
   )
 
   private val messageMixin = mixin(
@@ -229,5 +235,9 @@ object Chat extends StyleSheet.Inline {
     width(80.px),
     height(24.px),
     margin(0.px, 8.px),
+  )
+
+  val joinChatRoomButton = style(
+    padding(4.px),
   )
 }

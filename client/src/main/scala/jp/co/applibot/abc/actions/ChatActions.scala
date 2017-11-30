@@ -1,5 +1,6 @@
 package jp.co.applibot.abc.actions
 
+import japgolly.scalajs.react.Callback
 import jp.co.applibot.abc.models.Props
 import jp.co.applibot.abc.pages.Chat
 import jp.co.applibot.abc.shared.models._
@@ -16,6 +17,7 @@ class ChatActions(props: Props, state: Chat.State) {
         event.userPublicOption.foreach(props.actions.setUserInfo(_).runNow())
 
         event.joinedRoomsOption.foreach { joinedRooms =>
+          joinedRooms.rooms.foreach( cr => println(cr.title))
           joinedRooms.rooms.foreach { chatRoom =>
             state.webSocketOption.foreach { webSocket =>
               webSocket.send(Json.stringify(
@@ -54,5 +56,13 @@ class ChatActions(props: Props, state: Chat.State) {
       ))
     }
     props.actions.setEditingMessage("")
+  }
+
+  def joinRoom(chatRoom: ChatRoom) = Callback {
+    state.webSocketOption.foreach { webSocket =>
+      webSocket.send(Json.stringify(
+        Json.toJson(ClientToServerEvent(joinRoomOption = Some(chatRoom.id)))
+      ))
+    }
   }
 }

@@ -56,11 +56,24 @@ class SocketManager(userStore: UserStore, chatRoomStore: ChatRoomStore, messageS
       rooms = rooms.updated(chatRoomId, SocketUser(actorRef, userPublic) +: socketUsers.filterNot(_.userPublic.id == userPublic.id))
       userStore.update(userPublic.id, { u: UserPublic =>
         u.copy(joiningChatRooms = (chatRoomId +: u.joiningChatRooms).distinct)
-      }).foreach { _ =>
+      }).foreach(_.foreach { u =>
         chatRoomStore
           .update(chatRoomId, { chatRoom => chatRoom.copy(users = (userPublic.id +: chatRoom.users).distinct) })
-          .foreach(chatRoomOption => actorRef ! ServerToClientEvent(newChatRoomOption = chatRoomOption))
-      }
+          .foreach { chatRoomOption =>
+            Future.sequence(u.joiningChatRooms.map(chatRoomStore.get))
+              .map(_.flatten)
+              .map(ChatRooms(_))
+              .foreach { joined =>
+                chatRoomStore.list(u.id).map(ChatRooms(_)).foreach { chatRooms =>
+                  actorRef ! ServerToClientEvent(
+                    newChatRoomOption = chatRoomOption,
+                    joinedRoomsOption = Some(joined),
+                    availableRoomsOption = Some(chatRooms),
+                  )
+                }
+              }
+          }
+      })
 
     case Leave(Room(chatRoomId), actorRef, _) =>
     // TODO: チャットルームから退出する処理

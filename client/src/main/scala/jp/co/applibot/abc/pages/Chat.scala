@@ -104,16 +104,34 @@ object Chat {
           styles.Chat.chat,
           <.nav(
             styles.Chat.chatTitle,
+            props.state.chat.selectedChatRoomOption.map { chatRoom =>
+              <.div(
+                <.label(chatRoom.title),
+                if (props.state.chat.joinedChatRoomsOption.exists(_.rooms.exists(_.id == chatRoom.id))) {
+                  EmptyVdom
+                } else {
+                  <.button(
+                    styles.Chat.joinChatRoomButton,
+                    "このチャットルームに参加する",
+                    ^.onClick --> chatActions.joinRoom(chatRoom),
+                  )
+                }
+              )
+            }.getOrElse(EmptyVdom)
           ),
           <.div(
             styles.Chat.messages,
             props.state.user.publicOption.map { userPublic =>
               props.state.chat.selectedChatRoomOption.map { chatRoom =>
-                val messages = props.state.chat.messages.getOrElse(chatRoom.id, Seq.empty)
-                if (messages.isEmpty) {
-                  <.div("最初のメッセージを送信しよう")
+                if (props.state.chat.joinedChatRoomsOption.exists(_.rooms.exists(_.id == chatRoom.id))) {
+                  val messages = props.state.chat.messages.getOrElse(chatRoom.id, Seq.empty)
+                  if (messages.isEmpty) {
+                    <.div("最初のメッセージを送信しよう")
+                  } else {
+                    messages.sortBy(_.timestamp).map(renderMessage(_, userPublic.id)).toVdomArray
+                  }
                 } else {
-                  messages.sortBy(_.timestamp).map(renderMessage(_, userPublic.id)).toVdomArray
+                  EmptyVdom
                 }
               }.getOrElse(<.div("チャットルームを選択してください"))
             }.getOrElse("ログインしてください！")
@@ -128,6 +146,13 @@ object Chat {
               ^.onChange ==> ((event: ReactEventFromInput) => {
                 val value = event.target.value
                 props.actions.setEditingMessage(value)
+              }),
+              ^.onKeyDown ==> ((event: ReactKeyboardEventFromInput) => {
+                if (event.key == "Enter") {
+                  chatActions.sendMessage(props.state.chat.selectedChatRoomOption.get.id, props.state.chat.editingMessage)
+                } else {
+                  Callback.empty
+                }
               })
             ),
             <.button(
