@@ -45,7 +45,32 @@ object Chat extends StyleSheet.Inline {
   )
 
   val room = style(
+    &.hover(
+      backgroundColor(Color(Colors.grey200)),
+    ),
+    &.active(
+      backgroundColor(Color(Colors.grey100)),
+    ),
+    display.flex,
+    flexDirection.row,
+    borderColor(Color(Colors.grey300)),
+    borderWidth(0.px, 0.px, 1.px, 0.px),
+    borderStyle.solid,
     flex := "0 0 64px",
+    justifyContent.spaceBetween,
+    alignItems.center,
+    cursor.pointer,
+    userSelect := "none",
+  )
+
+  val roomTitle = style(
+    margin(0.px, 20.px),
+    width(128.px),
+    textAlign.center,
+  )
+
+  val joinedIcon = style(
+    margin(0.px, 20.px),
   )
 
   val chat = style(
@@ -65,6 +90,26 @@ object Chat extends StyleSheet.Inline {
 
   val messages = style(
     flex := "1 0 0",
+  )
+
+  private val messageMixin = mixin(
+    display.flex,
+    alignItems.center,
+    width(100.%%),
+  )
+
+  val myMessage = style(
+    messageMixin,
+    justifyContent.flexStart,
+    borderColor(Color(Colors.lightBlue500)),
+    borderStyle.solid,
+    borderWidth(1.px),
+    borderRadius(4.px, 4.px, 4.px, 0.px),
+  )
+
+  val otherMessage = style(
+    messageMixin,
+    justifyContent.flexEnd,
   )
 
   val chatController = style(

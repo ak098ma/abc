@@ -4,7 +4,7 @@ import japgolly.scalajs.react.Callback
 import japgolly.scalajs.react.vdom.VdomElement
 import jp.co.applibot.abc.TokenManager
 import jp.co.applibot.abc.models._
-import jp.co.applibot.abc.shared.models.{ChatRooms, UserPublic}
+import jp.co.applibot.abc.shared.models.{ChatRoom, ChatRooms, ReceivedMessage, UserPublic}
 
 class Actions(private[this] val update: (State => State) => Callback) {
   private def updateModalState(updateModal: ModalState => ModalState): Callback = update(state => state.copy(modal = updateModal(state.modal)))
@@ -42,4 +42,15 @@ class Actions(private[this] val update: (State => State) => Callback) {
   def closeModal(): Callback = updateModalState(_.copy(renderModalOption = None))
 
   def setTitleOfNewChatRoom(title: String): Callback = updateChatState(_.copy(titleOfNewChatRoom = title))
+
+  def selectRoom(chatRoom: ChatRoom): Callback = updateChatState(_.copy(selectedChatRoomOption = Some(chatRoom)))
+
+  def setEditingMessage(message: String): Callback = updateChatState(_.copy(editingMessage = message))
+
+  def setReceivedMessage(receivedMessage: ReceivedMessage): Callback = updateChatState { chatState =>
+    val currentMessages = chatState.messages.getOrElse(receivedMessage.chatRoomId, Seq.empty)
+    chatState.copy(messages = chatState.messages.updated(receivedMessage.chatRoomId, receivedMessage +: currentMessages))
+  }
+
+  def setReceivedMessages(receivedMessages: Seq[ReceivedMessage]): Callback = Callback.sequence(receivedMessages.map(setReceivedMessage))
 }

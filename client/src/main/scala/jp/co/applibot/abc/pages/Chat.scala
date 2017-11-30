@@ -5,7 +5,7 @@ import japgolly.scalajs.react.component.Scala.Unmounted
 import japgolly.scalajs.react.vdom.html_<^._
 import jp.co.applibot.abc.actions.ChatActions
 import jp.co.applibot.abc.models.Props
-import jp.co.applibot.abc.shared.models.{ChatRoom, ChatRooms}
+import jp.co.applibot.abc.shared.models.{ChatRoom, ChatRooms, ReceivedMessage}
 import jp.co.applibot.abc.shared.styles
 import org.scalajs.dom._
 
@@ -23,9 +23,11 @@ object Chat {
       bs.modState(_.copy(isOpen = false)).runNow()
     }
     val onMessage: js.Function1[MessageEvent, Unit] = (messageEvent) => {
-      bs.props.flatMap { props => bs.state.map { state =>
-        new ChatActions(props, state).handleMessage(messageEvent.data.toString)
-      }}.runNow()
+      bs.props.flatMap { props =>
+        bs.state.map { state =>
+          new ChatActions(props, state).handleMessage(messageEvent.data.toString)
+        }
+      }.runNow()
     }
     val onError: js.Function1[Event, Unit] = (_) => {}
     val onClose: js.Function1[CloseEvent, Unit] = (closeEvent) => {
@@ -95,7 +97,7 @@ object Chat {
           ),
           <.ul(
             styles.Chat.roomList,
-            renderRooms(props.state.chat.joinedChatRoomsOption, props.state.chat.availableChatRoomsOption),
+            renderRooms(props.state.chat.joinedChatRoomsOption, props.state.chat.availableChatRoomsOption, props.actions.selectRoom),
           ),
         ),
         <.section(
@@ -105,15 +107,34 @@ object Chat {
           ),
           <.div(
             styles.Chat.messages,
+            props.state.user.publicOption.map { userPublic =>
+              props.state.chat.selectedChatRoomOption.map { chatRoom =>
+                val messages = props.state.chat.messages.getOrElse(chatRoom.id, Seq.empty)
+                  .map(message => renderMessage(message, userPublic.id))
+                if (messages.isEmpty) {
+                  <.div("最初のメッセージを送信しよう")
+                } else {
+                  messages.toVdomArray
+                }
+              }.getOrElse(<.div("チャットルームを選択してください"))
+            }.getOrElse("ログインしてください！")
           ),
           <.div(
             styles.Chat.chatController,
             <.input(
               styles.Chat.inputMessage,
+              ^.disabled := props.state.chat.selectedChatRoomOption.isEmpty,
               ^.placeholder := "何か発言してみよう！",
+              ^.value := props.state.chat.editingMessage,
+              ^.onChange ==> ((event: ReactEventFromInput) => {
+                val value = event.target.value
+                props.actions.setEditingMessage(value)
+              })
             ),
             <.button(
               styles.Chat.sendButton,
+              ^.disabled := props.state.chat.selectedChatRoomOption.isEmpty,
+              ^.onClick --> chatActions.sendMessage(props.state.chat.selectedChatRoomOption.get.id, props.state.chat.editingMessage)
             ),
           ),
         ),
@@ -130,23 +151,38 @@ object Chat {
       )
     }
 
-    def renderRooms(joinedRoomsOption: Option[ChatRooms], availableRoomsOption: Option[ChatRooms]) = {
+    def renderRooms(joinedRoomsOption: Option[ChatRooms], availableRoomsOption: Option[ChatRooms], selectRoom: ChatRoom => Callback) = {
       joinedRoomsOption.flatMap { joinedRooms =>
         availableRoomsOption.map { availableRooms =>
-          joinedRooms.rooms.map((true, _)) ++ availableRooms.rooms.map((false, _))
+          (joinedRooms.rooms ++ availableRooms.rooms)
+            .distinct
+            .map { room => (joinedRooms.rooms.contains(room), room) }
         }
       }.map { combinedRooms =>
         if (combinedRooms.isEmpty) {
           <.li("参加可能な部屋がありません。上の + マークから部屋を作成しましょう。")
         } else {
           combinedRooms.map { case (isJoinedRoom, chatRoom) =>
-            <.li(
-              ^.key := s"room_${chatRoom.id}",
-              chatRoom.title
-            )
+            renderRoom(isJoinedRoom, chatRoom, selectRoom)
           }.toVdomArray
         }
       }.getOrElse(<.li("読み込み中です..."))
+    }
+
+    def renderRoom(isJoinedRoom: Boolean, chatRoom: ChatRoom, selectRoom: ChatRoom => Callback) = {
+      <.li(
+        ^.key := s"room_${chatRoom.id}_$isJoinedRoom",
+        styles.Chat.room,
+        ^.onClick --> selectRoom(chatRoom),
+        <.div(
+          styles.Chat.roomTitle,
+          s"${chatRoom.title}${if (isJoinedRoom) " - joined" else ""}"
+        ),
+        <.div(
+          styles.Chat.joinedIcon,
+          "icon",
+        ),
+      )
     }
 
     def renderCreateRoom(cancel: () => Callback, create: () => Callback, title: String, onChange: (String) => Callback) = {
@@ -179,6 +215,15 @@ object Chat {
             ^.onClick --> create(),
           ),
         )
+      )
+    }
+
+    def renderMessage(message: ReceivedMessage, userId: String) = {
+      val isMyMessage = message.userId == userId
+      <.div(
+        ^.key := s"message_${message.messageId}",
+        if (isMyMessage) styles.Chat.myMessage else styles.Chat.otherMessage,
+        <.div(message.message),
       )
     }
 

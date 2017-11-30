@@ -99,7 +99,17 @@ class SocketManager(userStore: UserStore, chatRoomStore: ChatRoomStore, messageS
             }).foreach(_.foreach { u =>
               chatRoomStore.list(u.id).map(ChatRooms(_)).foreach { chatRooms =>
                 val available = if (chatRoom.isPrivate) Some(chatRooms) else None
-                everybody.filter(_.userPublic.id == u.id).foreach(_.actorRef ! ServerToClientEvent(newChatRoomOption = Some(chatRoom), availableRoomsOption = available))
+                everybody.filter(_.userPublic.id == u.id).foreach { socketUser =>
+                  Future.sequence(u.joiningChatRooms.map(chatRoomStore.get))
+                    .map(_.flatten)
+                    .map(ChatRooms(_))
+                    .foreach { joined =>
+                      socketUser.actorRef ! ServerToClientEvent(
+                        joinedRoomsOption = Some(joined),
+                        availableRoomsOption = available
+                      )
+                    }
+                }
               }
             })
           }
