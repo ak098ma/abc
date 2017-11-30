@@ -17,7 +17,6 @@ class ChatActions(props: Props, state: Chat.State) {
         event.userPublicOption.foreach(props.actions.setUserInfo(_).runNow())
 
         event.joinedRoomsOption.foreach { joinedRooms =>
-          joinedRooms.rooms.foreach( cr => println(cr.title))
           joinedRooms.rooms.foreach { chatRoom =>
             state.webSocketOption.foreach { webSocket =>
               webSocket.send(Json.stringify(
