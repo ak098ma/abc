@@ -7,7 +7,7 @@ import jp.co.applibot.abc.models.Props
 object NotFound {
   val notFound = ScalaComponent.builder[Props]("NotFound")
     .stateless
-    .renderStatic{
+    .renderStatic {
       <.div(
         <.h1("Page not found.")
       )

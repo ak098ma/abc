@@ -55,6 +55,7 @@ object Login extends StyleSheet.Inline {
     backgroundSize := "contain",
     backgroundImage := "url(/assets/images/icons/thumb_up.png)",
     backgroundRepeat := "no-repeat",
+    backgroundColor.transparent,
     borderStyle.none,
     outline.`0`,
     width(iconSize px),
@@ -73,7 +74,7 @@ object Login extends StyleSheet.Inline {
     &.hover(
       textDecoration := "underline",
     ),
-    color(Color("#0fabff")),
+    color(Color(Colors.lightBlue500)),
     fontSize(12 px),
     fontWeight.lighter,
     cursor.pointer,

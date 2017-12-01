@@ -29,7 +29,7 @@ class ChatController @Inject()(cc: ControllerComponents,
   def socket = WebSocket.acceptOrResult[ClientToServerEvent, ServerToClientEvent] { request =>
     request.getQueryString("token") match {
       case None =>
-        Future.successful(Left(Unauthorized))
+          Future.successful(Left(Unauthorized("unauthorized")))
       case Some(token) =>
         jwtCodec
           .decode(token)
@@ -37,8 +37,8 @@ class ChatController @Inject()(cc: ControllerComponents,
           .map(userStore.get)
           .map(_.map(_.map{ userPublic =>
             Right(ActorFlow.actorRef(out => Props(new WebSocketActor(out, socketManager, userPublic))))
-          }.getOrElse(Left(Unauthorized))))
-          .getOrElse(Future.successful(Left(Unauthorized)))
+          }.getOrElse(Left(Unauthorized("unauthorized")))))
+          .getOrElse(Future.successful(Left(Unauthorized("unauthorized"))))
     }
   }
 }

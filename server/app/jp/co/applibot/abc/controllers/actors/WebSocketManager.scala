@@ -24,7 +24,7 @@ case class Subscribe(room: Room, actorRef: ActorRef, userPublic: UserPublic) ext
 
 case class UnSubscribe(room: Room, actorRef: ActorRef, userPublic: UserPublic) extends SocketManagerEvent
 
-case class Send(target: Target, message: String) extends SocketManagerEvent
+case class Send(target: Target, message: String, userId: String) extends SocketManagerEvent
 
 case class SocketUser(actorRef: ActorRef, userPublic: UserPublic)
 
@@ -56,11 +56,24 @@ class SocketManager(userStore: UserStore, chatRoomStore: ChatRoomStore, messageS
       rooms = rooms.updated(chatRoomId, SocketUser(actorRef, userPublic) +: socketUsers.filterNot(_.userPublic.id == userPublic.id))
       userStore.update(userPublic.id, { u: UserPublic =>
         u.copy(joiningChatRooms = (chatRoomId +: u.joiningChatRooms).distinct)
-      }).foreach { _ =>
+      }).foreach(_.foreach { u =>
         chatRoomStore
           .update(chatRoomId, { chatRoom => chatRoom.copy(users = (userPublic.id +: chatRoom.users).distinct) })
-          .foreach(chatRoomOption => actorRef ! ServerToClientEvent(newChatRoomOption = chatRoomOption))
-      }
+          .foreach { chatRoomOption =>
+            Future.sequence(u.joiningChatRooms.map(chatRoomStore.get))
+              .map(_.flatten)
+              .map(ChatRooms(_))
+              .foreach { joined =>
+                chatRoomStore.list(u.id).map(ChatRooms(_)).foreach { chatRooms =>
+                  actorRef ! ServerToClientEvent(
+                    newChatRoomOption = chatRoomOption,
+                    joinedRoomsOption = Some(joined),
+                    availableRoomsOption = Some(chatRooms),
+                  )
+                }
+              }
+          }
+      })
 
     case Leave(Room(chatRoomId), actorRef, _) =>
     // TODO: チャットルームから退出する処理
@@ -77,7 +90,7 @@ class SocketManager(userStore: UserStore, chatRoomStore: ChatRoomStore, messageS
       val socketUsers = rooms.getOrElse(chatRoomId, Seq.empty)
       rooms = rooms.updated(chatRoomId, SocketUser(actorRef, userPublic) +: socketUsers.filterNot(_.userPublic.id == userPublic.id))
       messageStore.get(chatRoomId, 0, 7).map(_.map { message =>
-        ReceivedMessage(chatRoomId = chatRoomId, messageId = message.id, message = message.message, timestamp = message.timestamp)
+        ReceivedMessage(chatRoomId = chatRoomId, messageId = message.id, userId = message.userId, message = message.message, timestamp = message.timestamp)
       }).foreach(messages => actorRef ! ServerToClientEvent(receivedMessagesOption = Some(messages)))
 
     case UnSubscribe(Room(chatRoomId), _, userPublic) =>
@@ -99,7 +112,17 @@ class SocketManager(userStore: UserStore, chatRoomStore: ChatRoomStore, messageS
             }).foreach(_.foreach { u =>
               chatRoomStore.list(u.id).map(ChatRooms(_)).foreach { chatRooms =>
                 val available = if (chatRoom.isPrivate) Some(chatRooms) else None
-                everybody.filter(_.userPublic.id == u.id).foreach(_.actorRef ! ServerToClientEvent(newChatRoomOption = Some(chatRoom), availableRoomsOption = available))
+                everybody.filter(_.userPublic.id == u.id).foreach { socketUser =>
+                  Future.sequence(u.joiningChatRooms.map(chatRoomStore.get))
+                    .map(_.flatten)
+                    .map(ChatRooms(_))
+                    .foreach { joined =>
+                      socketUser.actorRef ! ServerToClientEvent(
+                        joinedRoomsOption = Some(joined),
+                        availableRoomsOption = available
+                      )
+                    }
+                }
               }
             })
           }
@@ -112,11 +135,11 @@ class SocketManager(userStore: UserStore, chatRoomStore: ChatRoomStore, messageS
           }
         }
 
-    case Send(Service, message) =>
+    case Send(Service, message, userId) =>
 
-    case Send(Room(chatRoomId), message) =>
-      messageStore.add(chatRoomId, message).foreach { message =>
-        rooms.get(chatRoomId).foreach(_.foreach(_.actorRef ! ServerToClientEvent(receivedMessageOption = Some(ReceivedMessage(chatRoomId = chatRoomId, messageId = message.id, message = message.message, timestamp = message.timestamp)))))
+    case Send(Room(chatRoomId), message, userId) =>
+      messageStore.add(chatRoomId, message, userId).foreach { message =>
+        rooms.get(chatRoomId).foreach(_.foreach(_.actorRef ! ServerToClientEvent(receivedMessageOption = Some(ReceivedMessage(chatRoomId = chatRoomId, messageId = message.id, userId = message.userId, message = message.message, timestamp = message.timestamp)))))
       }
   }
 }

@@ -1,5 +1,6 @@
 package jp.co.applibot.abc.web
 
+import jp.co.applibot.abc.TokenManager
 import jp.co.applibot.abc.shared.models._
 import org.scalajs.dom.experimental.Fetch.fetch
 import org.scalajs.dom.experimental.HttpMethod._
@@ -34,5 +35,22 @@ object APIClient {
       headers = headers,
     )
     request(path, options)
+  }
+
+  def refreshToken: Future[Response] = {
+    TokenManager.getToken match {
+      case None =>
+        Future.failed(new InterruptedException("ログインしてください。"))
+      case Some(jwt) =>
+        val path = "/rest/v1/refresh"
+        val headers = new Headers()
+        headers.append("Authorization", jwt)
+        val options = RequestInit(
+          method = POST,
+          credentials = RequestCredentials.include,
+          headers = headers,
+        )
+        request(path, options)
+    }
   }
 }

@@ -2,12 +2,17 @@ package jp.co.applibot.abc
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.VdomElement
+import jp.co.applibot.abc.actions.Actions
 import jp.co.applibot.abc.models._
+import jp.co.applibot.abc.shared.models.UserPublic
 
 object Store {
   type Props = (State, Actions) => VdomElement
 
   private val initialState = State(
+    modal = ModalState(
+      renderModalOption = None,
+    ),
     login = LoginState(
       id = "",
       password = "",
@@ -18,7 +23,7 @@ object Store {
       password = "",
     ),
     chat = ChatState(
-      userPublicOption = None,
+      users = Map.empty[String, UserPublic],
       joinedChatRoomsOption = None,
       availableChatRoomsOption = None,
       isCreateNewChatRoomDialogOpen = false,
@@ -28,12 +33,14 @@ object Store {
       editingMessage = "",
     ),
     user = UserState(
-      tokenOption = None,
+      tokenOption = TokenManager.getToken,
+      publicOption = None,
     ),
   )
 
   class Backend(bs: BackendScope[Props, State]) {
-    private val actions = new Actions((dispatch: State => State) => bs.modState(state => dispatch(state)))
+    private val actions = new Actions((update: State => State) => bs.modState(update))
+
     def render(props: Props, state: State) = props(state, actions)
   }
 
@@ -44,21 +51,4 @@ object Store {
     .build
 
   def apply(connect: Props) = store(connect)
-}
-
-class Actions(private[this] val update: (State => State) => Callback) {
-  private def updateLoginState(updateLogin: LoginState => LoginState): Callback = update(state => state.copy(login = updateLogin(state.login)))
-  private def updateSignUpState(updateSignUp: SignUpState => SignUpState): Callback = update(state => state.copy(signUp = updateSignUp(state.signUp)))
-  private def updateChatState(updateChat: ChatState => ChatState): Callback = update(state => state.copy(chat = updateChat(state.chat)))
-  private def updateUserState(updateUser: UserState => UserState): Callback = update(state => state.copy(user = updateUser(state.user)))
-
-  def setSignUpId(id: String): Callback = updateSignUpState(_.copy(id = id))
-  def setSignUpNickname(nickname: String): Callback = updateSignUpState(_.copy(nickname = nickname))
-  def setSignUpPassword(password: String): Callback = updateSignUpState(_.copy(password = password))
-
-  def setLoginId(id: String): Callback = updateLoginState(_.copy(id = id))
-  def setLoginPassword(password: String): Callback = updateLoginState(_.copy(password = password))
-
-  def setToken(token: String): Callback = updateUserState(_.copy(tokenOption = Some(token)))
-  def clearToken(): Callback = updateUserState(_.copy(tokenOption = None))
 }

@@ -21,9 +21,9 @@ object SignUp extends StyleSheet.Inline {
   val form = style(
     borderStyle.solid,
     borderWidth(1 px),
-    borderColor(Color("#e5e5e5")),
+    borderColor(Color(Colors.grey200)),
     borderRadius(8 px),
-    backgroundColor(Color("white")),
+    backgroundColor(Color(Colors.white)),
     width(512 px),
     padding(8 px),
   )
@@ -55,6 +55,7 @@ object SignUp extends StyleSheet.Inline {
     backgroundSize := "contain",
     backgroundImage := "url(/assets/images/icons/send.png)",
     backgroundRepeat := "no-repeat",
+    backgroundColor.transparent,
     cursor.pointer,
     borderStyle.none,
     outline.`0`,
@@ -74,7 +75,7 @@ object SignUp extends StyleSheet.Inline {
     &.hover(
       textDecoration := "underline",
     ),
-    color(Color("#0fabff")),
+    color(Color(Colors.lightBlue500)),
     fontSize(12 px),
     fontWeight.lighter,
     cursor.pointer,

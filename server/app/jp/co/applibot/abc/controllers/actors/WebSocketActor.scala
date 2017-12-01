@@ -29,7 +29,7 @@ class WebSocketActor(webSocketRef: ActorRef, socketManager: ActorRef, userPublic
       socketManager ! UnSubscribe(Room(chatRoom.id), webSocketRef, userPublic)
     }
     event.newMessageOption.foreach { newMessage =>
-      socketManager ! Send(Room(newMessage.chatRoomId), newMessage.message)
+      socketManager ! Send(Room(newMessage.chatRoomId), newMessage.message, userPublic.id)
     }
   }
 }
